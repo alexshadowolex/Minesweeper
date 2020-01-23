@@ -1,7 +1,7 @@
 import java.awt.*;
-import java.awt.event.*;
+// import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
+// import java.util.*;
 import java.io.*;
 
 public class MinesweeperView{
@@ -60,23 +60,29 @@ public class MinesweeperView{
 
     public MinesweeperView(){
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        //Build the frame
         frame = new JFrame( menuTitle );
         frame.setVisible(true);
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frame.setResizable(false);
+        //Build the main menu
         mainMenu = new JPanel( new GridLayout( 7, 1 ) );
         headline = new JLabel("Chose Field-Type:", SwingConstants.CENTER );
         mainMenu.add( headline );
         bg = new ButtonGroup();
+
         for( int i = 0; i < radioButtons.length; i++ ){
+            //Initialize the radiobuttons
             radioButtons[i] = new JRadioButton( radioButtonText[i] );
             bg.add( radioButtons[i] );
+            //First one is selected
             if( i == 0 )
                 radioButtons[i].setSelected(true);
             mainMenu.add( radioButtons[i] );
         }
         customValues = new JPanel( new GridLayout( 1, 5 ) );
         int where = 0;
+        //Build the fields for the custom settings
         for( int i = 0; i < 5; i++ ){
             if( i == 1 ){
                 customValues.add( new JLabel("X", SwingConstants.CENTER ) );
@@ -95,6 +101,7 @@ public class MinesweeperView{
         goButton = new JButton("Start Game");
         mainMenu.add( goButton );
 
+        //Reshape some icons
         ImageIcon iconAbort = new ImageIcon( pathToXIcon );
         ImageIcon iconReset = new ImageIcon( pathToResetIcon );
         flagIcon.setImage( flagIcon.getImage().getScaledInstance( 30, 30, Image.SCALE_DEFAULT ) );
@@ -104,8 +111,10 @@ public class MinesweeperView{
 
         Font font = null;
         try{
+            //get a new font for the counter
             String filename="D:/Dateien/Wichtiges/Programme/java/Minesweeper/font/digital-7.ttf";
-            //this is for testing normally we would store the font file in our app (knows as an embedded resource), see this for help on that http://stackoverflow.com/questions/13796331/jar-embedded-resources-nullpointerexception/13797070#13797070
+            //Link for including files in jar:
+            //http://stackoverflow.com/questions/13796331/jar-embedded-resources-nullpointerexception/13797070#13797070
             font = Font.createFont( Font.TRUETYPE_FONT, new File( filename ) );
             font = font.deriveFont( Font.BOLD, 22 );
             
@@ -114,6 +123,7 @@ public class MinesweeperView{
         } catch ( FontFormatException ffe ){}
           catch ( IOException ioe ){}
 
+        //Build the game panel
         gameView = new JPanel( new BorderLayout() );
         gameMenu = new JPanel( new GridLayout( 1, 3 ) );
         abortButton = new JButton( iconAbort );
@@ -130,32 +140,31 @@ public class MinesweeperView{
 
         gameView.add( gameMenu, BorderLayout.NORTH );
         gameView.add( game, BorderLayout.CENTER );
-
+        //Paint the main menu
         repaintFrame( WITH_MAIN_MENU, 0, 0 );
     }
 
-    private void repaintFrame( boolean menu, int width, int height ){
+    public void repaintFrame( boolean menu, int width, int height ){
         int w = width * 40;
         int h = height * 40;
-        // if( width != height ){
-        //     w = (w / 30) * 20;
-        // }
+
         Dimension current = new Dimension( w, h );
         if( menu ){
+            //Going back to menu
             current = new Dimension( startWidth, startHeight );
             frame.setTitle( menuTitle );
             frame.remove( gameView );
             frame.add( mainMenu );
         } else {
+            //Starting new game
             gameView.remove( game );
             game = new JPanel( new GridLayout( height, width ) );
             buttons = new JButton[ height ][ width ];
-            // for( int i = 0; i < width * height; i++ )
-            //     game.add( new JLabel("L" + i ) );
-            // Random rnd = new Random();
+
             for( int i = 0; i < buttons.length; i++ ){
                 for( int j = 0; j < buttons[i].length; j++ ){
-                    buttons[i][j] = new JButton( /*Integer.toString( rnd.nextInt( 10 ) )*/ );
+                    //Initialize every button
+                    buttons[i][j] = new JButton();
                     buttons[i][j].setBackground( Color.WHITE );
                     buttons[i][j].setFont( new Font( "Arial", Font.PLAIN, 20 ) );
                     buttons[i][j].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
@@ -167,6 +176,7 @@ public class MinesweeperView{
             frame.remove( mainMenu );
             frame.add( gameView );
         }
+        //Reshape and relocate
         frame.setPreferredSize( current );
         frame.pack();
         windowSize = frame.getBounds();
@@ -175,41 +185,54 @@ public class MinesweeperView{
         frame.repaint();
     }
 
-    public void changePanel( boolean menu, int width, int height ){
-        repaintFrame( menu, width, height );
-    }
-
-    public void setRevealed( int value, int width, int height ){
-        buttons[ height ][ width ].setBackground( COLOR_REVEALED );
+    //set a field as revealed by left clicking it
+    public boolean setRevealed( int value, int width, int height ){
+        JButton button = buttons[ height ][ width ];
+        button.setBackground( COLOR_REVEALED );
+        boolean retValue = true;
+        if( button.getIcon() != null || button.getText().equals("?") ){
+            button.setIcon(null);
+            retValue = false;
+        }
+        //TODO value == 0
         if( value == -1 )
+            //If it was a bomb, show the bomb icon
+            //TODO: abort game
             buttons[ height ][ width ].setIcon( bombIcon );
         else
+            //Show the value
             buttons[ height ][ width ].setText( Integer.toString( value ) );
         // buttons[ height ][ width ].setEnabled(false);    //maybe do this TODO
+        
+        return retValue;
     }
 
-    public void setFieldArea( int value, int width, int height ){
-        buttons[ height ][ width ].setText( Integer.toString( value ) );
-    }
+    // public void setFieldArea( int value, int width, int height ){
+    //     buttons[ height ][ width ].setText( Integer.toString( value ) );
+    // }
 
     public int setFlag( int width, int height ){
+        //Set a flag by right clicking
         JButton button = buttons[ height ][ width ];
         if( !button.getBackground().equals( COLOR_REVEALED ) ){
-            
+            //If the button is not revealed yet            
             if( button.getText().equals("?") ){
+                //If the button is a "?", remove it
                 button.setText("");
                 return 1;
             } else {
                 if( button.getIcon() != null ){
+                    //Reset the icon
                     button.setIcon(null);
                     button.setText("?");
-                    return 0;
                 } else {
+                    //Set the icon
                     button.setIcon( flagIcon );
+                    return -1;
                 }
             }
         }
-        return -1;
+        return 0;
     }
 
     public JTextField[] getCustomTextFields(){

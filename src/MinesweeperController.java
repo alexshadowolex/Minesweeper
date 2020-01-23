@@ -110,11 +110,7 @@ public class MinesweeperController{
                 if( worked ){
                     //if everything worked, initialize the game
                     initNewGame( width, height, mines );
-                    String tmp = Integer.toString( mines );
-                    while( tmp.length() < Integer.toString( MAX_MINES ).length() )
-                        tmp = "0" + tmp;
-                    //set the counter on current amount of numbers
-                    view.setCounterText( tmp + " " );
+                    buildAndSetCounter();
                 }
             }
         } );
@@ -125,7 +121,7 @@ public class MinesweeperController{
             public void actionPerformed( ActionEvent ae ){
                 int []widthHeight = view.getStartWidthHeight();
                 //Change to the menuPanel with start width and height
-                view.changePanel( true, widthHeight[0], widthHeight[1] );
+                view.repaintFrame( true, widthHeight[0], widthHeight[1] );
             }
         } );
 
@@ -142,7 +138,7 @@ public class MinesweeperController{
     private void initNewGame( int width, int height, int mines ){
         model.initGame( width, height, mines );
         //init a new game and change to the gamePanel
-        view.changePanel( false, model.getWidth(), model.getHeight() );
+        view.repaintFrame( false, model.getWidth(), model.getHeight() );
         JButton [][]buttons = view.getGameButtons();
         for( int i = 0; i < buttons.length; i++ ){
             for( int j = 0; j < buttons[i].length; j++ ){
@@ -186,7 +182,9 @@ public class MinesweeperController{
                         }
                         if( me.getButton() == 1 ){  //Left click
                             //Left click reveales the field
-                            view.setRevealed( model.getFieldValue( currentWidth, currentHeight ), currentWidth, currentHeight );
+                            if( !view.setRevealed( model.getFieldValue( currentWidth, currentHeight ), currentWidth, currentHeight ) ){
+                                buildAndSetCounter();
+                            }
                         } 
                         if( me.getButton() == 3 ){  //Right click
                             //right click sets a flag or turns it into a "?" or turns a "?" into a blank field 
@@ -203,12 +201,7 @@ public class MinesweeperController{
                                     break;
                                 }
                             }
-                            String tmp = Integer.toString( model.getCurrentFlags() );
-                            //Build a string for the label
-                            if( model.getCurrentFlags() >= 0 )
-                                while( tmp.length() < Integer.toString( MAX_MINES ).length() )
-                                    tmp = "0" + tmp;
-                            view.setCounterText( tmp + " " );
+                            buildAndSetCounter();
                         }
                     }
 
@@ -219,5 +212,17 @@ public class MinesweeperController{
                 } );
             }
         }
+    }
+    private void buildAndSetCounter(){
+        String tmp = Integer.toString( model.getCurrentFlags() );
+        //Build a string for the label
+        if( model.getCurrentFlags() >= 0 )
+            while( tmp.length() < Integer.toString( MAX_MINES ).length() )
+                tmp = "0" + tmp;
+        else
+            while( tmp.length() < Integer.toString( MAX_MINES ).length() + 1 )
+                tmp = "-0" + tmp.substring(1);
+
+        view.setCounterText( tmp + " " );
     }
 }

@@ -1,4 +1,4 @@
-import java.util.Arrays;
+// import java.util.Arrays;
 import java.util.Random;
 
 public class MinesweeperModel{
@@ -53,13 +53,12 @@ public class MinesweeperModel{
                             } catch ( IndexOutOfBoundsException e ){}
                         }
                     //set field value
-                    System.out.println("HI");
                     fields[i][j] = currentValue;
                 }
             }
         }
 
-        System.out.println( Arrays.deepToString( fields ) );
+        // System.out.println( Arrays.deepToString( fields ) );
         
     }
 
