@@ -4,6 +4,7 @@ import javax.swing.*;
 public class MinesweeperController{
     private MinesweeperView view;
     private MinesweeperModel model;
+    private int MAX_MINES = 0;
 
     public MinesweeperController(){
         view = new MinesweeperView();
@@ -33,6 +34,9 @@ public class MinesweeperController{
                 int width = 0;
                 int height = 0;
                 int mines = 0;
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                MAX_MINES = (int) ((screenSize.getHeight() / 30 ) * (screenSize.getWidth() / 30) - 300);
+                // System.out.println("Height: " + screenSize.getHeight() / 30 + "\nWidth: " + screenSize.getWidth() / 30 );
                 boolean worked = true;
                 for( int i = 0; i < radioButtons.length; i++ ){
                     if( radioButtons[i].isSelected() ){
@@ -64,11 +68,25 @@ public class MinesweeperController{
                                     textFields[2].setText("found");
                                     worked = false;
                                 }
-                                if( mines > (height * width) - 1 ){
-                                    textFields[0].setText("too");
-                                    textFields[1].setText("many");
-                                    textFields[2].setText("mines");
-                                    worked = false;
+                                if( worked ){
+                                    if( mines > (height * width) - 1 ){
+                                        textFields[0].setText("too");
+                                        textFields[1].setText("many");
+                                        textFields[2].setText("mines");
+                                        worked = false;
+                                    }
+                                    if( height > (screenSize.getHeight() / 30 ) || width > (screenSize.getWidth() / 30) || mines > MAX_MINES ){
+                                        textFields[0].setText("max " + (int) (screenSize.getHeight() / 30 ) );
+                                        textFields[1].setText("max " + (int) (screenSize.getWidth() / 30) );
+                                        textFields[2].setText("max " + MAX_MINES );
+                                        worked = false;
+                                    }
+                                    if( mines < 1 || width < 5 || height < 5 ){
+                                        textFields[0].setText("min 5");
+                                        textFields[1].setText("min 5");
+                                        textFields[2].setText("min 1");
+                                        worked = false;
+                                    }
                                 }
                                 break;
                             }
@@ -80,6 +98,10 @@ public class MinesweeperController{
                 }
                 if( worked ){
                     initNewGame( width, height, mines );
+                    String tmp = Integer.toString( mines );
+                    while( tmp.length() < Integer.toString( MAX_MINES ).length() )
+                        tmp = "0" + tmp;
+                    view.setCounterText( tmp + " " );
                 }
             }
         } );
@@ -147,7 +169,22 @@ public class MinesweeperController{
                         } 
                         if( me.getButton() == 3 ){  //Right click
                             //Count flags. New function "setFlag". New label for flag count
-                            view.setFlag( currentWidth, currentHeight);
+                            int ret = view.setFlag( currentWidth, currentHeight);
+                            switch (ret){
+                                case 1:{
+                                    model.incCurrentMines();
+                                    break;
+                                }
+                                case -1:{
+                                    model.decCurrentMines();
+                                    break;
+                                }
+                            }
+                            String tmp = Integer.toString( model.getCurrentMines() );
+                            if( model.getCurrentMines() >= 0 )
+                                while( tmp.length() < Integer.toString( MAX_MINES ).length() )
+                                    tmp = "0" + tmp;
+                            view.setCounterText( tmp + " " );
                         }
                     }
 

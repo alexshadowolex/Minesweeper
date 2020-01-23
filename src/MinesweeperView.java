@@ -120,6 +120,8 @@ public class MinesweeperView{
         resetButton = new JButton( iconReset );
         countLabel = new JLabel("CountLabel", SwingConstants.RIGHT );
         countLabel.setFont( font );
+        countLabel.setForeground( Color.RED );
+        // countLabel.setBackground( Color.BLACK ); //Does not work
         gameMenu.add( abortButton );
         gameMenu.add( resetButton );
         gameMenu.add( countLabel );
@@ -190,21 +192,24 @@ public class MinesweeperView{
         buttons[ height ][ width ].setText( Integer.toString( value ) );
     }
 
-    public void setFlag( int width, int height ){
+    public int setFlag( int width, int height ){
         JButton button = buttons[ height ][ width ];
         if( !button.getBackground().equals( COLOR_REVEALED ) ){
             
             if( button.getText().equals("?") ){
                 button.setText("");
+                return 1;
             } else {
                 if( button.getIcon() != null ){
                     button.setIcon(null);
                     button.setText("?");
+                    return 0;
                 } else {
                     button.setIcon( flagIcon );
                 }
             }
         }
+        return -1;
     }
 
     public JTextField[] getCustomTextFields(){
@@ -237,5 +242,13 @@ public class MinesweeperView{
 
     public boolean isRevealed( int width, int height ){
         return buttons[ height ][ width ].getBackground().equals( COLOR_REVEALED );
+    }
+
+    public String getCounterText(){
+        return countLabel.getText();
+    }
+
+    public void setCounterText( String text ){
+        countLabel.setText( text );
     }
 }
