@@ -1,4 +1,4 @@
-// import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Random;
 
 public class MinesweeperModel{
@@ -58,7 +58,7 @@ public class MinesweeperModel{
             }
         }
 
-        // System.out.println( Arrays.deepToString( fields ) );
+        System.out.println( Arrays.deepToString( fields ) );
         
     }
 

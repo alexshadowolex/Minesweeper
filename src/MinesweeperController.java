@@ -182,8 +182,12 @@ public class MinesweeperController{
                         }
                         if( me.getButton() == 1 ){  //Left click
                             //Left click reveales the field
-                            if( !view.setRevealed( model.getFieldValue( currentWidth, currentHeight ), currentWidth, currentHeight ) ){
+                            int value = model.getFieldValue( currentWidth, currentHeight );
+                            if( !view.setRevealed( value, currentWidth, currentHeight ) ){
                                 buildAndSetCounter();
+                            }
+                            if( value == 0 ){
+                                revealZero( currentWidth, currentHeight );
                             }
                         } 
                         if( me.getButton() == 3 ){  //Right click
@@ -213,6 +217,7 @@ public class MinesweeperController{
             }
         }
     }
+
     private void buildAndSetCounter(){
         String tmp = Integer.toString( model.getCurrentFlags() );
         //Build a string for the label
@@ -224,5 +229,24 @@ public class MinesweeperController{
                 tmp = "-0" + tmp.substring(1);
 
         view.setCounterText( tmp + " " );
+    }
+
+    private void revealZero( int width, int height ){
+        view.setRevealed( model.getFieldValue( width, height ), width, height );
+        for( int i = height - 1; i <= height + 1; i++ ){
+            for( int j = width - 1; j <= width + 1; j++ ){
+                try {
+                    int value = model.getFieldValue( j, i );
+                    if( !view.isSetFlag( j, i ) && 
+                        !view.isSetQuestionMark( j, i ) && 
+                        value == 0 && 
+                        !view.isRevealed( j, i ) ){
+                        revealZero( j, i );
+                    }
+                    if( !view.isSetFlag( j, i ) && !view.isSetQuestionMark( j, i ) )
+                        view.setRevealed( value, j, i );
+                } catch ( IndexOutOfBoundsException e ) {}
+            }
+        }
     }
 }

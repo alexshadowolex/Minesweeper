@@ -194,14 +194,16 @@ public class MinesweeperView{
             button.setIcon(null);
             retValue = false;
         }
-        //TODO value == 0
-        if( value == -1 )
+        
+        if( value == -1 ){
             //If it was a bomb, show the bomb icon
             //TODO: abort game
-            buttons[ height ][ width ].setIcon( bombIcon );
-        else
+            button.setIcon( bombIcon );
+        }
+        if( value > 0 ){
             //Show the value
-            buttons[ height ][ width ].setText( Integer.toString( value ) );
+            button.setText( Integer.toString( value ) );
+        }
         // buttons[ height ][ width ].setEnabled(false);    //maybe do this TODO
         
         return retValue;
@@ -264,7 +266,18 @@ public class MinesweeperView{
     }
 
     public boolean isRevealed( int width, int height ){
+        // JButton tst = new JButton();
+        // tst.setBackground( Color.WHITE );
+        // tst.setBackground( Color.LIGHT_GRAY );
         return buttons[ height ][ width ].getBackground().equals( COLOR_REVEALED );
+    }
+
+    public boolean isSetFlag( int width, int height ){
+        return buttons[ height ][ width ].getIcon() != null;
+    }
+
+    public boolean isSetQuestionMark( int width, int height ){
+        return buttons[ height ][ width ].getText().equals("?");
     }
 
     public String getCounterText(){
