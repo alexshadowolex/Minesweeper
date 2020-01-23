@@ -4,19 +4,20 @@ import java.util.Random;
 public class MinesweeperModel{
 
     private int mines;
-    private int currentMines;
+    private int currentFlags;
     private int width;
     private int height;
     private int [][]fields;
     
     public MinesweeperModel(){
-        width = height = mines = currentMines = 0;   
+        width = height = mines = currentFlags = 0;   
     }
 
     public void initGame( int width, int height, int mines ){
         this.width = width;
         this.height = height;
-        this.mines = currentMines = mines;
+        this.mines = currentFlags = mines;
+        //init the data
         fields = new int[ height ][ width ];
         for( int i = 0; i < fields.length; i++ )
             for( int j = 0; j < fields[i].length; j++ )
@@ -24,19 +25,24 @@ public class MinesweeperModel{
 
         int setMines = 0;
         Random rnd = new Random();
+        //set mines randomly
         while( setMines < mines ){
             int rndWidth = rnd.nextInt( width );
             int rndHeight = rnd.nextInt( height );
 
+            //if there is a mine set already, try again
             if( fields[ rndHeight ][ rndWidth ] == -1 )
                 continue;
 
+            //set mine
             fields[ rndHeight ][ rndWidth ] = -1;
             setMines++;
         }
 
+        //calc the fields values
         for( int i = 0; i < fields.length; i++ ){
             for( int j = 0; j < fields[i].length; j++ ){
+                //if there is no bomb, count the bombs around that field
                 if( fields[i][j] != -1 ){
                     int currentValue = 0;
                     for( int k = i - 1; k <= i + 1; k++ )
@@ -46,6 +52,8 @@ public class MinesweeperModel{
                                     currentValue++;
                             } catch ( IndexOutOfBoundsException e ){}
                         }
+                    //set field value
+                    System.out.println("HI");
                     fields[i][j] = currentValue;
                 }
             }
@@ -71,15 +79,15 @@ public class MinesweeperModel{
         return width;
     }
 
-    public int getCurrentMines(){
-        return currentMines;
+    public int getCurrentFlags(){
+        return currentFlags;
     }
 
-    public void incCurrentMines(){
-        currentMines++;
+    public void incCurrentFlags(){
+        currentFlags++;
     }
 
-    public void decCurrentMines(){
-        currentMines--;
+    public void decCurrentFlags(){
+        currentFlags--;
     }
 }
