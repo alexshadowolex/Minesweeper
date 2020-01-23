@@ -23,10 +23,10 @@ public class MinesweeperView{
     private Color COLOR_REVEALED = Color.LIGHT_GRAY;
     private JLabel headline;
 
-    private String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/Icons/emoji_x.png";
-    private String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/Icons/emoji1.jpg";
-    private ImageIcon flagIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/Icons/flag.png");
-    private ImageIcon bombIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/Icons/bomb.png");
+    private String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji_x.png";
+    private String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji1.jpg";
+    private ImageIcon flagIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/flag.png");
+    private ImageIcon bombIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/bomb.png");
     private String menuTitle = "Minesweeper Menu";
     private String []radioButtonText = new String[]{ 
         "Beginner (9x9, 10 Mines)", 
@@ -104,7 +104,7 @@ public class MinesweeperView{
 
         Font font = null;
         try{
-            String filename="D:/Dateien/Wichtiges/Programme/java/Minesweeper/Font/digital-7.ttf";
+            String filename="D:/Dateien/Wichtiges/Programme/java/Minesweeper/font/digital-7.ttf";
             //this is for testing normally we would store the font file in our app (knows as an embedded resource), see this for help on that http://stackoverflow.com/questions/13796331/jar-embedded-resources-nullpointerexception/13797070#13797070
             font = Font.createFont( Font.TRUETYPE_FONT, new File( filename ) );
             font = font.deriveFont( Font.BOLD, 22 );
