@@ -19,6 +19,10 @@ public class MinesweeperView{
     private Dimension screenSize;
     private Rectangle windowSize;
 
+    private final int FACTOR_WINDOW_SIZE = 40;
+    private final Font generalFont = new Font("Arial", Font.BOLD, 14 );
+    private final Font gameButtonFont = new Font("Arial", Font.PLAIN, 20 );
+    private final String headlineText = "Chose Field-Type:";
     private final int startWidth = 350;
     private final int startHeight = 500;
     private final boolean WITH_MAIN_MENU = true;
@@ -37,6 +41,8 @@ public class MinesweeperView{
     private final String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji_x.png";
     private final String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji1.jpg";
     private ImageIcon flagIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/flag.png");
+    private final int SIZE_GAME_ICONS = 30;
+    private final int SIZE_MENU_ICONS = 15;
     private ImageIcon bombIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/bomb.png");
     private final String menuTitle = "Minesweeper Menu";
     private final String []radioButtonText = new String[]{ 
@@ -73,18 +79,21 @@ public class MinesweeperView{
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //Build the frame
         frame = new JFrame( menuTitle );
+        frame.setFont( generalFont );
         frame.setVisible(true);
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frame.setResizable(false);
         //Build the main menu
         mainMenu = new JPanel( new GridLayout( 7, 1 ) );
-        headline = new JLabel("Chose Field-Type:", SwingConstants.CENTER );
+        headline = new JLabel( headlineText , SwingConstants.CENTER );
+        headline.setFont( generalFont );
         mainMenu.add( headline );
         bg = new ButtonGroup();
 
         for( int i = 0; i < radioButtons.length; i++ ){
             //Initialize the radiobuttons
             radioButtons[i] = new JRadioButton( radioButtonText[i] );
+            radioButtons[i].setFont( generalFont );
             bg.add( radioButtons[i] );
             //First one is selected
             if( i == 0 )
@@ -104,21 +113,24 @@ public class MinesweeperView{
                 continue;
             }
             customSettings[ where ] = new JTextField();
+            customSettings[ where ].setFont( generalFont );
+            customSettings[ where ].setHorizontalAlignment( JTextField.CENTER );
             customSettings[ where ].setEnabled(false);
             customValues.add( customSettings[ where ] );
             where++;
         }
         mainMenu.add( customValues );
         goButton = new JButton("Start Game");
+        goButton.setFont( generalFont );
         mainMenu.add( goButton );
 
         //Reshape some icons
         ImageIcon iconAbort = new ImageIcon( pathToXIcon );
         ImageIcon iconReset = new ImageIcon( pathToResetIcon );
-        flagIcon.setImage( flagIcon.getImage().getScaledInstance( 30, 30, Image.SCALE_DEFAULT ) );
-        bombIcon.setImage( bombIcon.getImage().getScaledInstance( 30, 30, Image.SCALE_DEFAULT ) );
-        iconAbort.setImage( iconAbort.getImage().getScaledInstance( 15, 15, Image.SCALE_DEFAULT ) );
-        iconReset.setImage( iconReset.getImage().getScaledInstance( 15, 15, Image.SCALE_DEFAULT ) );
+        flagIcon.setImage( flagIcon.getImage().getScaledInstance( SIZE_GAME_ICONS, SIZE_GAME_ICONS, Image.SCALE_DEFAULT ) );
+        bombIcon.setImage( bombIcon.getImage().getScaledInstance( SIZE_GAME_ICONS, SIZE_GAME_ICONS, Image.SCALE_DEFAULT ) );
+        iconAbort.setImage( iconAbort.getImage().getScaledInstance( SIZE_MENU_ICONS, SIZE_MENU_ICONS, Image.SCALE_DEFAULT ) );
+        iconReset.setImage( iconReset.getImage().getScaledInstance( SIZE_MENU_ICONS, SIZE_MENU_ICONS, Image.SCALE_DEFAULT ) );
 
         Font font = null;
         try{
@@ -156,8 +168,8 @@ public class MinesweeperView{
     }
 
     public void repaintFrame( boolean menu, int width, int height ){
-        int w = width * 40;
-        int h = height * 40;
+        int w = width * FACTOR_WINDOW_SIZE;
+        int h = height * FACTOR_WINDOW_SIZE;
 
         Dimension current = new Dimension( w, h );
         if( menu ){
@@ -177,7 +189,7 @@ public class MinesweeperView{
                     //Initialize every button
                     buttons[i][j] = new JButton();
                     buttons[i][j].setBackground( Color.WHITE );
-                    buttons[i][j].setFont( new Font( "Arial", Font.PLAIN, 20 ) );
+                    buttons[i][j].setFont( gameButtonFont );
                     buttons[i][j].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
                     game.add( buttons[i][j] );
                 }
