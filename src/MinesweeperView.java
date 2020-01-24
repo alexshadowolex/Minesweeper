@@ -15,20 +15,31 @@ public class MinesweeperView{
     private JButton abortButton;
     private JButton resetButton;
     private JLabel countLabel;
+    private JLabel headline;
     private Dimension screenSize;
     private Rectangle windowSize;
-    private int startWidth = 350;
-    private int startHeight = 500;
-    private boolean WITH_MAIN_MENU = true;
-    private Color COLOR_REVEALED = Color.LIGHT_GRAY;
-    private JLabel headline;
 
-    private String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji_x.png";
-    private String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji1.jpg";
+    private final int startWidth = 350;
+    private final int startHeight = 500;
+    private final boolean WITH_MAIN_MENU = true;
+    private final Color COLOR_REVEALED = Color.LIGHT_GRAY;
+    private final Color []numberColors = new Color[]{
+        new Color( 0, 47, 254 ),     //1: Blue
+        new Color( 14, 100, 46 ),    //2: Green
+        new Color( 253, 54, 31 ),    //3: Red
+        new Color( 0, 18, 105 ),     //4: Dark blue
+        new Color( 92, 6, 1 ),       //5: Dark red
+        new Color( 0, 162, 163 ),    //6: Cyan
+        new Color( 112, 0, 108 ),    //7: Purple
+        new Color( 158, 79, 0 )      //8: Dark orange
+    };
+
+    private final String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji_x.png";
+    private final String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji1.jpg";
     private ImageIcon flagIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/flag.png");
     private ImageIcon bombIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/bomb.png");
-    private String menuTitle = "Minesweeper Menu";
-    private String []radioButtonText = new String[]{ 
+    private final String menuTitle = "Minesweeper Menu";
+    private final String []radioButtonText = new String[]{ 
         "Beginner (9x9, 10 Mines)", 
         "Intermediate (16x16, 40 Mines)", 
         "Expert (16x32, 99 Mines)", 
@@ -238,6 +249,10 @@ public class MinesweeperView{
         return 0;
     }
 
+    public void setNumberColors( int value, int width, int height ){
+        buttons[ height ][ width ].setForeground( numberColors[ value - 1 ] );
+    }
+
     public JTextField[] getCustomTextFields(){
         return customSettings;
     }
@@ -267,9 +282,6 @@ public class MinesweeperView{
     }
 
     public boolean isRevealed( int width, int height ){
-        // JButton tst = new JButton();
-        // tst.setBackground( Color.WHITE );
-        // tst.setBackground( Color.LIGHT_GRAY );
         return buttons[ height ][ width ].getBackground().equals( COLOR_REVEALED );
     }
 
@@ -288,4 +300,8 @@ public class MinesweeperView{
     public void setCounterText( String text ){
         countLabel.setText( text );
     }
+
+    // public Color[] getNumberColors(){
+    //     return numberColors;
+    // }
 }

@@ -214,6 +214,9 @@ public class MinesweeperController{
                         
                     }
                 } );
+                int value = model.getFieldValue( j, i );
+                if( value != 0 && value != -1 )
+                    view.setNumberColors( value, j, i );
             }
         }
     }
