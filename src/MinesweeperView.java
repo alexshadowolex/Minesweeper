@@ -199,7 +199,7 @@ public class MinesweeperView{
             //If it was a bomb, show the bomb icon
             //TODO: abort game
             button.setIcon( bombIcon );
-            retValue = false;
+            // retValue = false;
         }
         if( value > 0 ){
             //Show the value

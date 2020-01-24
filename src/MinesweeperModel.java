@@ -8,6 +8,12 @@ public class MinesweeperModel{
     private int width;
     private int height;
     private int [][]fields;
+    private final int MAX_MINES = 668;
+    private final int MAX_WIDTH = 30;
+    private final int MAX_HEIGHT = 24;
+    private final int MIN_MINES = 1;
+    private final int MIN_WIDTH = 6;
+    private final int MIN_HEIGHT = 6;
     
     public MinesweeperModel(){
         width = height = mines = currentFlags = 0;   
@@ -58,7 +64,14 @@ public class MinesweeperModel{
             }
         }
 
-        System.out.println( Arrays.deepToString( fields ) );
+        String output = Arrays.deepToString( fields );
+        output = "1: " + output.substring( 1, output.length() - 1 );
+        int iterator = 2;
+        while( output.indexOf("],") != -1 ){
+            output = output.substring( 0, output.indexOf("],") + 1 ) + "\n" + iterator + ":" + output.substring( output.indexOf("],") + 2 );
+            iterator++;
+        }
+        System.out.println( output );
         
     }
 
@@ -89,4 +102,29 @@ public class MinesweeperModel{
     public void decCurrentFlags(){
         currentFlags--;
     }
+
+    public int getMaxMines(){
+        return MAX_MINES;
+    }
+
+    public int getMaxWidth(){
+        return MAX_WIDTH;
+    }
+
+    public int getMaxHeight(){
+        return MAX_HEIGHT;
+    }
+
+    public int getMinMines(){
+        return MIN_MINES;
+    }
+
+    public int getMinWidth(){
+        return MIN_WIDTH;
+    }
+
+    public int getMinHeight(){
+        return MIN_HEIGHT;
+    }
+
 }

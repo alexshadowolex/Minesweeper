@@ -1,10 +1,9 @@
-import java.awt.*;
+// import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class MinesweeperController{
     private MinesweeperView view;
     private MinesweeperModel model;
-    private int MAX_MINES = 0;
 
     public MinesweeperController(){
         view = new MinesweeperView();   //initialize GUI
@@ -35,8 +34,7 @@ public class MinesweeperController{
                 int width = 0;
                 int height = 0;
                 int mines = 0;
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                MAX_MINES = (int) ((screenSize.getHeight() / 30 ) * (screenSize.getWidth() / 30) - 1);
+                // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 //Max amount of mines depending on screenSize
                 // System.out.println("Height: " + screenSize.getHeight() / 30 + "\nWidth: " + screenSize.getWidth() / 30 );
                 boolean worked = true;
@@ -84,18 +82,18 @@ public class MinesweeperController{
                                         textFields[2].setText("mines");
                                         worked = false;
                                     }
-                                    if( height > (screenSize.getHeight() / 30 ) || width > (screenSize.getWidth() / 30) || mines > MAX_MINES ){
+                                    if( height > model.getMaxHeight() || width > model.getMaxWidth() || mines > model.getMaxMines() ){
                                         //if at least on number is too big
-                                        textFields[0].setText("max " + (int) (screenSize.getHeight() / 30 ) );
-                                        textFields[1].setText("max " + (int) (screenSize.getWidth() / 30) );
-                                        textFields[2].setText("max " + MAX_MINES );
+                                        textFields[0].setText("max " + model.getMaxHeight() );
+                                        textFields[1].setText("max " + model.getMaxWidth() );
+                                        textFields[2].setText("max " + model.getMaxMines() );
                                         worked = false;
                                     }
-                                    if( mines < 1 || width < 5 || height < 5 ){
+                                    if( mines < model.getMinMines() || width < model.getMinWidth() || height < model.getMinHeight() ){
                                         //if at least one number is too small
-                                        textFields[0].setText("min 5");
-                                        textFields[1].setText("min 5");
-                                        textFields[2].setText("min 1");
+                                        textFields[0].setText("min " + model.getMinHeight() );
+                                        textFields[1].setText("min " + model.getMinWidth() );
+                                        textFields[2].setText("min " + model.getMinMines() );
                                         worked = false;
                                     }
                                 }
@@ -224,10 +222,10 @@ public class MinesweeperController{
         String tmp = Integer.toString( model.getCurrentFlags() );
         //Build a string for the label
         if( model.getCurrentFlags() >= 0 )
-            while( tmp.length() < Integer.toString( MAX_MINES ).length() )
+            while( tmp.length() < Integer.toString( model.getMaxMines() ).length() )
                 tmp = "0" + tmp;
         else
-            while( tmp.length() < Integer.toString( MAX_MINES ).length() + 1 )
+            while( tmp.length() < Integer.toString( model.getMaxMines() ).length() + 1 )
                 tmp = "-0" + tmp.substring(1);
 
         view.setCounterText( tmp + " " );
