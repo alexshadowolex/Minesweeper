@@ -208,10 +208,15 @@ public class MinesweeperView{
         
         if( value == -1 ){
             //If it was a bomb, show the bomb icon
-            //TODO: abort game
             button.setIcon( bombIcon );
             // retValue = false;
         }
+        if( value == -2 ){
+            //The clicked bomb, which caused the loss, gets a red background
+            button.setBackground( Color.RED );
+            button.setIcon( bombIcon );
+        }
+
         if( value > 0 ){
             //Show the value
             button.setText( Integer.toString( value ) );

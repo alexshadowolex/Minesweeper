@@ -4,6 +4,7 @@ import javax.swing.*;
 public class MinesweeperController{
     private MinesweeperView view;
     private MinesweeperModel model;
+    private boolean finishedGame = false;
 
     public MinesweeperController(){
         view = new MinesweeperView();   //initialize GUI
@@ -136,6 +137,7 @@ public class MinesweeperController{
 
     private void initNewGame( int width, int height, int mines ){
         model.initGame( width, height, mines );
+        finishedGame = false;
         //init a new game and change to the gamePanel
         view.repaintFrame( false, model.getWidth(), model.getHeight() );
         JButton [][]buttons = view.getGameButtons();
@@ -160,52 +162,85 @@ public class MinesweeperController{
 
                     @Override
                     public void mouseReleased( MouseEvent me ){
-                        //action happens on mouseRelease
-                        JButton pressedButton = (JButton) me.getSource();
-                        //Get the pressed button
-                        int currentWidth = -1;
-                        int currentHeight = -1;
-                        for( int i = 0; i < buttons.length; i++ ){
-                            boolean done = false;
-                            for( int j = 0; j < buttons[i].length; j++ ){
-                                //find the position of the button
-                                if( buttons[i][j].equals( pressedButton ) ){
-                                    currentHeight = i;
-                                    currentWidth = j;
-                                    done = true;
-                                    break;
+                        if( !finishedGame ){    //If not lost, keep going
+                            //action happens on mouseRelease
+                            JButton pressedButton = (JButton) me.getSource();
+                            pressedButton.setFocusable(false);
+                            //Get the pressed button
+                            int currentWidth = -1;
+                            int currentHeight = -1;
+                            for( int i = 0; i < buttons.length; i++ ){
+                                boolean done = false;
+                                for( int j = 0; j < buttons[i].length; j++ ){
+                                    //find the position of the button
+                                    if( buttons[i][j].equals( pressedButton ) ){
+                                        currentHeight = i;
+                                        currentWidth = j;
+                                        done = true;
+                                        break;
+                                    }
                                 }
+                                if( done )
+                                    break;
                             }
-                            if( done )
-                                break;
-                        }
-                        if( me.getButton() == 1 ){  //Left click
-                            //Left click reveales the field
-                            int value = model.getFieldValue( currentWidth, currentHeight );
-                            if( !view.setRevealed( value, currentWidth, currentHeight ) ){
-                                model.incCurrentFlags();
+                            if( me.getButton() == 1 ){  //Left click
+                                //Left click reveales the field
+                                int value = model.getFieldValue( currentWidth, currentHeight );
+                                if( !view.setRevealed( value, currentWidth, currentHeight ) ){
+                                    model.incCurrentFlags();
+                                    buildAndSetCounter();
+                                }
+                                if( value == 0 ){
+                                    revealZero( currentWidth, currentHeight );
+                                }
+                                
+                                if( value == -1 ){
+                                    finishedGame = true;
+                                    view.setRevealed( -2, currentWidth, currentHeight );
+                                    //Reveal all mines
+                                    for( int i = 0; i < buttons.length; i++ ){
+                                        for( int j = 0; j < buttons[i].length; j++ ){
+                                            int tmpValue = model.getFieldValue( j, i );
+                                            if( tmpValue == -1 && (currentHeight != i || currentWidth != j) ){
+                                                view.setRevealed( tmpValue, j, i );
+                                            }
+                                        }
+                                    }
+                                    view.setCounterText("LOSE ");
+                                }
+
+                                if( value != -1 ){
+                                    int countNotRevealedFields = 0;
+                                    for( int i = 0; i < buttons.length; i++ ){
+                                        for( int j = 0; j < buttons[i].length; j++ ){
+                                            //Count all not revealed fields
+                                            if( !view.isRevealed( j, i ) )
+                                                countNotRevealedFields++;
+                                        }
+                                    }
+                                    if( countNotRevealedFields == model.getMines() ){
+                                        finishedGame = true;
+                                        view.setCounterText("WIN ");
+                                    }
+                                }
+                            } 
+                            if( me.getButton() == 3 ){  //Right click
+                                //right click sets a flag or turns it into a "?" or turns a "?" into a blank field 
+                                int ret = view.setFlag( currentWidth, currentHeight);
+                                switch (ret){
+                                    case 1:{
+                                        //"?" into a blank field -> inc currentFlags
+                                        model.incCurrentFlags();
+                                        break;
+                                    }
+                                    case -1:{
+                                        //flag set -> dec currentFlags
+                                        model.decCurrentFlags();
+                                        break;
+                                    }
+                                }
                                 buildAndSetCounter();
                             }
-                            if( value == 0 ){
-                                revealZero( currentWidth, currentHeight );
-                            }
-                        } 
-                        if( me.getButton() == 3 ){  //Right click
-                            //right click sets a flag or turns it into a "?" or turns a "?" into a blank field 
-                            int ret = view.setFlag( currentWidth, currentHeight);
-                            switch (ret){
-                                case 1:{
-                                    //"?" into a blank field -> inc currentFlags
-                                    model.incCurrentFlags();
-                                    break;
-                                }
-                                case -1:{
-                                    //flag set -> dec currentFlags
-                                    model.decCurrentFlags();
-                                    break;
-                                }
-                            }
-                            buildAndSetCounter();
                         }
                     }
 

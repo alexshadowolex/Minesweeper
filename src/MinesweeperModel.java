@@ -71,7 +71,7 @@ public class MinesweeperModel{
             output = output.substring( 0, output.indexOf("],") + 1 ) + "\n" + iterator + ":" + output.substring( output.indexOf("],") + 2 );
             iterator++;
         }
-        System.out.println( output );
+        System.out.println( output + "\n================" );
         
     }
 
