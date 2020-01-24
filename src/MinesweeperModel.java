@@ -75,7 +75,7 @@ public class MinesweeperModel{
     }
     
     public int getMines(){
-        return width;
+        return mines;
     }
 
     public int getCurrentFlags(){

@@ -130,6 +130,7 @@ public class MinesweeperController{
             public void actionPerformed( ActionEvent ae ){
                 //init a new game with current saved data
                 initNewGame( model.getWidth(), model.getHeight(), model.getMines() );
+                buildAndSetCounter();
             }
         } );
 
@@ -184,6 +185,7 @@ public class MinesweeperController{
                             //Left click reveales the field
                             int value = model.getFieldValue( currentWidth, currentHeight );
                             if( !view.setRevealed( value, currentWidth, currentHeight ) ){
+                                model.incCurrentFlags();
                                 buildAndSetCounter();
                             }
                             if( value == 0 ){
@@ -232,18 +234,24 @@ public class MinesweeperController{
     }
 
     private void revealZero( int width, int height ){
+        //Reveal current field
         view.setRevealed( model.getFieldValue( width, height ), width, height );
         for( int i = height - 1; i <= height + 1; i++ ){
             for( int j = width - 1; j <= width + 1; j++ ){
+                //Check all 8 fields around the current field
                 try {
+                    //Check if flag or "?"
+                    //Check if got revealed already
                     int value = model.getFieldValue( j, i );
                     if( !view.isSetFlag( j, i ) && 
                         !view.isSetQuestionMark( j, i ) && 
                         value == 0 && 
                         !view.isRevealed( j, i ) ){
-                        revealZero( j, i );
+                        //reveal if so
+                            revealZero( j, i );
                     }
                     if( !view.isSetFlag( j, i ) && !view.isSetQuestionMark( j, i ) )
+                        //if it's a number, reveal it
                         view.setRevealed( value, j, i );
                 } catch ( IndexOutOfBoundsException e ) {}
             }
