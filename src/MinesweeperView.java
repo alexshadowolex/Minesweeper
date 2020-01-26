@@ -11,6 +11,8 @@ public class MinesweeperView{
     private JPanel game;
     private JPanel gameView;
     private JPanel gameMenu;
+    private JPanel gameMenuHigher;
+    private JPanel gameMenuLower;
     private JPanel mainMenu;
     private JButton abortButton;
     private final String abortButtonToolTip = "Abort Game";
@@ -18,6 +20,8 @@ public class MinesweeperView{
     private final String resetButtonToolTip = "Reset Game";
     private JLabel countLabel;
     private final String countLabelToolTip = "Possible Flags";
+    private JLabel timeLabel;
+    private final String timeLabelToolTip = "Used Time";
     private JLabel headline;
     private Dimension screenSize;
     private Rectangle windowSize;
@@ -163,21 +167,32 @@ public class MinesweeperView{
 
         //Build the game panel
         gameView = new JPanel( new BorderLayout() );
-        gameMenu = new JPanel( new GridLayout( 1, 3 ) );
+        gameMenu = new JPanel( new GridLayout( 2, 1 ) );
+        gameMenuHigher = new JPanel( new GridLayout( 1, 2 ) );
         abortButton = new JButton( iconAbort );
         abortButton.setToolTipText( abortButtonToolTip );
         resetButton = new JButton( iconReset );
         resetButton.setToolTipText( resetButtonToolTip );
+        gameMenuHigher.add( abortButton );
+        gameMenuHigher.add( resetButton );
+
+        gameMenuLower = new JPanel( new GridLayout( 1, 2 ) );
+        timeLabel = new JLabel("TimeLabel", SwingConstants.LEFT );
+        timeLabel.setToolTipText( timeLabelToolTip );
+        timeLabel.setFont( font );
+        timeLabel.setForeground( Color.RED );
+        gameMenuLower.add( timeLabel );
+
         countLabel = new JLabel("CountLabel", SwingConstants.RIGHT );
         countLabel.setToolTipText( countLabelToolTip );
         countLabel.setFont( font );
         countLabel.setForeground( Color.RED );
-        // countLabel.setBackground( Color.BLACK ); //Does not work
-        gameMenu.add( abortButton );
-        gameMenu.add( resetButton );
-        gameMenu.add( countLabel );
+        gameMenuLower.add( countLabel );
 
         game = new JPanel( new GridLayout(1,1) );
+
+        gameMenu.add( gameMenuHigher );
+        gameMenu.add( gameMenuLower );
 
         gameView.add( gameMenu, BorderLayout.NORTH );
         gameView.add( game, BorderLayout.CENTER );
