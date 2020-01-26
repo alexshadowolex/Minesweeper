@@ -5,6 +5,20 @@ public class MinesweeperController{
     private MinesweeperView view;
     private MinesweeperModel model;
     private boolean finishedGame = false;
+    private boolean firstClick = true;
+    private boolean goTime = false;
+    // private TimeControl timer;
+    private Thread thread;
+
+    private class TimeControl implements Runnable{
+        
+        public TimeControl(){}
+        public void run(){
+            while( goTime ){
+                view.setTimeText( model.getUsedTime() );
+            }
+        }
+    }
 
     public MinesweeperController(){
         view = new MinesweeperView();   //initialize GUI
@@ -138,6 +152,8 @@ public class MinesweeperController{
     private void initNewGame( int width, int height, int mines ){
         model.initGame( width, height, mines );
         finishedGame = false;
+        firstClick = true;
+        thread = new Thread( new TimeControl() );
         //init a new game and change to the gamePanel
         view.repaintFrame( false, model.getWidth(), model.getHeight() );
         JButton [][]buttons = view.getGameButtons();
@@ -186,6 +202,13 @@ public class MinesweeperController{
                             if( me.getButton() == 1 ){  //Left click
                                 //Left click reveales the field
                                 int value = model.getFieldValue( currentWidth, currentHeight );
+                                if( firstClick ){
+                                    firstClick = false;
+                                    // goTime = true;
+                                    goTime = false;
+                                    thread.run();
+                                    // model.startTimer();
+                                }
                                 if( !view.setRevealed( value, currentWidth, currentHeight ) ){
                                     model.incCurrentFlags();
                                     buildAndSetCounter();
@@ -196,6 +219,8 @@ public class MinesweeperController{
                                 
                                 if( value == -1 ){
                                     finishedGame = true;
+                                    goTime = false;
+                                    model.setGoTime( false );
                                     view.setRevealed( -2, currentWidth, currentHeight );
                                     //Reveal all mines
                                     for( int i = 0; i < buttons.length; i++ ){
@@ -206,7 +231,7 @@ public class MinesweeperController{
                                             }
                                         }
                                     }
-                                    view.setCounterText("LOSE ");
+                                    view.setCounterText("LOSE");
                                 }
 
                                 if( value != -1 ){
@@ -220,7 +245,9 @@ public class MinesweeperController{
                                     }
                                     if( countNotRevealedFields == model.getMines() ){
                                         finishedGame = true;
-                                        view.setCounterText("WIN ");
+                                        goTime = false;
+                                        model.setGoTime( false );
+                                        view.setCounterText("WIN");
                                     }
                                 }
                             } 
@@ -266,7 +293,7 @@ public class MinesweeperController{
             while( tmp.length() < Integer.toString( model.getMaxMines() ).length() + 1 )
                 tmp = "-0" + tmp.substring(1);
 
-        view.setCounterText( tmp + " " );
+        view.setCounterText( tmp );
     }
 
     private void revealZero( int width, int height ){

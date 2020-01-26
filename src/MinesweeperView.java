@@ -177,13 +177,13 @@ public class MinesweeperView{
         gameMenuHigher.add( resetButton );
 
         gameMenuLower = new JPanel( new GridLayout( 1, 2 ) );
-        timeLabel = new JLabel("TimeLabel", SwingConstants.LEFT );
+        timeLabel = new JLabel(" TimeLabel", SwingConstants.LEFT );
         timeLabel.setToolTipText( timeLabelToolTip );
         timeLabel.setFont( font );
         timeLabel.setForeground( Color.RED );
         gameMenuLower.add( timeLabel );
 
-        countLabel = new JLabel("CountLabel", SwingConstants.RIGHT );
+        countLabel = new JLabel("CountLabel ", SwingConstants.RIGHT );
         countLabel.setToolTipText( countLabelToolTip );
         countLabel.setFont( font );
         countLabel.setForeground( Color.RED );
@@ -348,10 +348,14 @@ public class MinesweeperView{
     }
 
     public void setCounterText( String text ){
-        countLabel.setText( text );
+        countLabel.setText( text + " " );
     }
 
-    // public Color[] getNumberColors(){
-    //     return numberColors;
-    // }
+    public String getTimeText(){
+        return timeLabel.getText();
+    }
+
+    public void setTimeText( String text ){
+        timeLabel.setText( " " + text );
+    }
 }

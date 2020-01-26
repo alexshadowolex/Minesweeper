@@ -14,15 +14,35 @@ public class MinesweeperModel{
     private final int MIN_MINES = 1;
     private final int MIN_WIDTH = 6;
     private final int MIN_HEIGHT = 6;
+    private String usedTime;
+    // private Timer timer;
+    private Thread thread;
+    private boolean goTime = true;
+
+    private class Timer implements Runnable{
+        private long startTime;
+
+        public Timer(){}
+
+        public void run(){
+            startTime = System.currentTimeMillis();
+            while( goTime ){
+                long now = System.currentTimeMillis();
+                usedTime = String.valueOf( now - startTime );
+            }
+        }
+    }
     
     public MinesweeperModel(){
         width = height = mines = currentFlags = 0;   
+        usedTime = "0";
     }
 
     public void initGame( int width, int height, int mines ){
         this.width = width;
         this.height = height;
         this.mines = currentFlags = mines;
+        thread = new Thread( new Timer() );
         //init the data
         fields = new int[ height ][ width ];
         for( int i = 0; i < fields.length; i++ )
@@ -127,4 +147,15 @@ public class MinesweeperModel{
         return MIN_HEIGHT;
     }
 
+    public void setGoTime( boolean b ){
+        goTime = b; //Stops the timer, when set to false
+    }
+
+    public void startTimer(){
+        thread.run();
+    }
+
+    public String getUsedTime(){
+        return usedTime;
+    }
 }
