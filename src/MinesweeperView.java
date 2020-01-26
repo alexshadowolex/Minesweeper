@@ -13,8 +13,11 @@ public class MinesweeperView{
     private JPanel gameMenu;
     private JPanel mainMenu;
     private JButton abortButton;
+    private final String abortButtonToolTip = "Abort Game";
     private JButton resetButton;
+    private final String resetButtonToolTip = "Reset Game";
     private JLabel countLabel;
+    private final String countLabelToolTip = "Possible Flags";
     private JLabel headline;
     private Dimension screenSize;
     private Rectangle windowSize;
@@ -51,6 +54,7 @@ public class MinesweeperView{
         "Expert (16x32, 99 Mines)", 
         "Custom (Enter below: Height, Width, Mines)" 
     };
+    private String []radioButtonToolTip = new String[ radioButtonText.length ];
     private JRadioButton radio9x9;
     private JRadioButton radio16x16;
     private JRadioButton radio16x32;
@@ -71,6 +75,11 @@ public class MinesweeperView{
         customWidth,
         customBombs
     };
+    private final String []textFieldToolTip = new String[]{
+        "Height",
+        "Width",
+        "Mines"
+    };
 
     private ButtonGroup bg;
     private JButton goButton;
@@ -90,9 +99,14 @@ public class MinesweeperView{
         mainMenu.add( headline );
         bg = new ButtonGroup();
 
+        for( int i = 0; i < radioButtonText.length; i++ ){
+            radioButtonToolTip[i] = radioButtonText[i].substring( 0, radioButtonText[i].indexOf("(") - 1 );
+        }
+
         for( int i = 0; i < radioButtons.length; i++ ){
             //Initialize the radiobuttons
             radioButtons[i] = new JRadioButton( radioButtonText[i] );
+            radioButtons[i].setToolTipText( radioButtonToolTip[i] );
             radioButtons[i].setFont( generalFont );
             bg.add( radioButtons[i] );
             //First one is selected
@@ -116,6 +130,7 @@ public class MinesweeperView{
             customSettings[ where ].setFont( generalFont );
             customSettings[ where ].setHorizontalAlignment( JTextField.CENTER );
             customSettings[ where ].setEnabled(false);
+            customSettings[ where ].setToolTipText( textFieldToolTip[ where ] );
             customValues.add( customSettings[ where ] );
             where++;
         }
@@ -150,8 +165,11 @@ public class MinesweeperView{
         gameView = new JPanel( new BorderLayout() );
         gameMenu = new JPanel( new GridLayout( 1, 3 ) );
         abortButton = new JButton( iconAbort );
+        abortButton.setToolTipText( abortButtonToolTip );
         resetButton = new JButton( iconReset );
+        resetButton.setToolTipText( resetButtonToolTip );
         countLabel = new JLabel("CountLabel", SwingConstants.RIGHT );
+        countLabel.setToolTipText( countLabelToolTip );
         countLabel.setFont( font );
         countLabel.setForeground( Color.RED );
         // countLabel.setBackground( Color.BLACK ); //Does not work
