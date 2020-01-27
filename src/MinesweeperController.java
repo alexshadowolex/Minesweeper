@@ -7,15 +7,15 @@ public class MinesweeperController{
     private boolean finishedGame = false;
     private boolean firstClick = true;
     private boolean goTime = false;
-    // private TimeControl timer;
     private Thread thread;
 
     private class TimeControl implements Runnable{
         
         public TimeControl(){}
         public void run(){
+            long startTime = System.currentTimeMillis();
             while( goTime ){
-                view.setTimeText( model.getUsedTime() );
+                view.setTimeText( String.valueOf( ( System.currentTimeMillis() - startTime ) / 1000 ) );
             }
         }
     }
@@ -31,7 +31,6 @@ public class MinesweeperController{
                 @Override
                 public void actionPerformed( ActionEvent ae ){
                     boolean enabled = false;
-                    // System.out.println("Pressed " + ((JRadioButton) ae.getSource()).getText() );
                     //if the custom radio button is selected, enable textfields
                     if( ((JRadioButton) ae.getSource()).equals( radioButtons[ radioButtons.length - 1 ] ) ){
                         enabled = true;
@@ -49,9 +48,7 @@ public class MinesweeperController{
                 int width = 0;
                 int height = 0;
                 int mines = 0;
-                // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 //Max amount of mines depending on screenSize
-                // System.out.println("Height: " + screenSize.getHeight() / 30 + "\nWidth: " + screenSize.getWidth() / 30 );
                 boolean worked = true;
                 for( int i = 0; i < radioButtons.length; i++ ){
                     if( radioButtons[i].isSelected() ){
@@ -115,8 +112,6 @@ public class MinesweeperController{
                                 break;
                             }
                         }
-                        // view.setFrameName( height + "x" + width );
-                        // System.out.println("Pressed " + ((JButton) ae.getSource()).getText() + " | Selected: " + i );
                         break;
                     }
                 }
@@ -151,6 +146,8 @@ public class MinesweeperController{
 
     private void initNewGame( int width, int height, int mines ){
         model.initGame( width, height, mines );
+        goTime = false;
+        view.setTimeText("0");
         finishedGame = false;
         firstClick = true;
         thread = new Thread( new TimeControl() );
@@ -204,10 +201,8 @@ public class MinesweeperController{
                                 int value = model.getFieldValue( currentWidth, currentHeight );
                                 if( firstClick ){
                                     firstClick = false;
-                                    // goTime = true;
-                                    goTime = false;
-                                    thread.run();
-                                    // model.startTimer();
+                                    goTime = true;
+                                    thread.start();
                                 }
                                 if( !view.setRevealed( value, currentWidth, currentHeight ) ){
                                     model.incCurrentFlags();
@@ -220,7 +215,6 @@ public class MinesweeperController{
                                 if( value == -1 ){
                                     finishedGame = true;
                                     goTime = false;
-                                    model.setGoTime( false );
                                     view.setRevealed( -2, currentWidth, currentHeight );
                                     //Reveal all mines
                                     for( int i = 0; i < buttons.length; i++ ){
@@ -246,7 +240,6 @@ public class MinesweeperController{
                                     if( countNotRevealedFields == model.getMines() ){
                                         finishedGame = true;
                                         goTime = false;
-                                        model.setGoTime( false );
                                         view.setCounterText("WIN");
                                     }
                                 }
