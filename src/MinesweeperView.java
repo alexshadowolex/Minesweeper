@@ -23,8 +23,17 @@ public class MinesweeperView{
     private JLabel timeLabel;
     private final String timeLabelToolTip = "Used Time";
     private JLabel headline;
+    private JButton highScoreButton;
     private Dimension screenSize;
     private Rectangle windowSize;
+
+    private final String highScoreTitle = "High Scores";
+    private JPanel highScorePanel;
+    private JLabel highScoreHeadline;
+    private final String highScoreHeadlineText = "High Scores";
+    private JLabel []highScores = new JLabel[ 10 ];
+    private String []highScoreToolTips = new String[ highScores.length ];
+    private JButton closeHighScores;
 
     private final int FACTOR_WINDOW_SIZE = 40;
     private final Font generalFont = new Font("Arial", Font.BOLD, 14 );
@@ -32,7 +41,9 @@ public class MinesweeperView{
     private final String headlineText = "Chose Field-Type:";
     private final int startWidth = 350;
     private final int startHeight = 500;
-    private final boolean WITH_MAIN_MENU = true;
+    public final int MAIN_MENU = 0;
+    public final int GAME = 1;
+    public final int HIGH_SCORES = 2;
     private final Color COLOR_REVEALED = Color.LIGHT_GRAY;
     private final Color []numberColors = new Color[]{
         new Color( 0, 47, 254 ),     //1: Blue
@@ -97,10 +108,28 @@ public class MinesweeperView{
         frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frame.setResizable(false);
         //Build the main menu
-        mainMenu = new JPanel( new GridLayout( 7, 1 ) );
+        mainMenu = new JPanel( new GridLayout( 8, 1 ) );
         headline = new JLabel( headlineText , SwingConstants.CENTER );
         headline.setFont( generalFont );
         mainMenu.add( headline );
+
+        highScoreButton = new JButton("High Scores");
+        highScoreButton.setFont( generalFont );
+        mainMenu.add( highScoreButton );
+
+        highScorePanel = new JPanel( new GridLayout( highScores.length + 2, 1 ) );
+        highScoreHeadline = new JLabel( highScoreHeadlineText, SwingConstants.CENTER );
+        highScoreHeadline.setFont( generalFont );
+        highScorePanel.add( highScoreHeadline );
+        for( int i = 0; i < highScores.length; i++ ){
+            highScores[i] = new JLabel( String.valueOf( i ) );
+            highScores[i].setFont( generalFont );
+            highScorePanel.add( highScores[i] );
+        }
+        closeHighScores = new JButton("Close");
+        closeHighScores.setFont( generalFont );
+        highScorePanel.add( closeHighScores );
+
         bg = new ButtonGroup();
 
         for( int i = 0; i < radioButtonText.length; i++ ){
@@ -153,7 +182,7 @@ public class MinesweeperView{
 
         Font font = null;
         try{
-            //get a new font for the counter
+            //get a new font for the counter and timer
             String filename="D:/Dateien/Wichtiges/Programme/java/Minesweeper/font/digital-7.ttf";
             //Link for including files in jar:
             //http://stackoverflow.com/questions/13796331/jar-embedded-resources-nullpointerexception/13797070#13797070
@@ -197,40 +226,56 @@ public class MinesweeperView{
         gameView.add( gameMenu, BorderLayout.NORTH );
         gameView.add( game, BorderLayout.CENTER );
         //Paint the main menu
-        repaintFrame( WITH_MAIN_MENU, 0, 0 );
+        repaintFrame( MAIN_MENU, 0, 0 );
     }
 
-    public void repaintFrame( boolean menu, int width, int height ){
+    public void repaintFrame( int which, int width, int height ){
         int w = width * FACTOR_WINDOW_SIZE;
         int h = height * FACTOR_WINDOW_SIZE;
 
         Dimension current = new Dimension( w, h );
-        if( menu ){
-            //Going back to menu
-            current = new Dimension( startWidth, startHeight );
-            frame.setTitle( menuTitle );
-            frame.remove( gameView );
-            frame.add( mainMenu );
-        } else {
-            //Starting new game
-            gameView.remove( game );
-            game = new JPanel( new GridLayout( height, width ) );
-            buttons = new JButton[ height ][ width ];
-
-            for( int i = 0; i < buttons.length; i++ ){
-                for( int j = 0; j < buttons[i].length; j++ ){
-                    //Initialize every button
-                    buttons[i][j] = new JButton();
-                    buttons[i][j].setBackground( Color.WHITE );
-                    buttons[i][j].setFont( gameButtonFont );
-                    buttons[i][j].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
-                    game.add( buttons[i][j] );
-                }
+        switch ( which ){
+            case MAIN_MENU:{
+                //Going back to menu
+                current = new Dimension( startWidth, startHeight );
+                frame.setTitle( menuTitle );
+                frame.remove( gameView );
+                frame.remove( highScorePanel );
+                frame.add( mainMenu );
+                break;
             }
-            gameView.add( game, BorderLayout.CENTER );
-            frame.setTitle( height + "x" + width );
-            frame.remove( mainMenu );
-            frame.add( gameView );
+            case GAME:{
+                //Starting new game
+                gameView.remove( game );
+                game = new JPanel( new GridLayout( height, width ) );
+                buttons = new JButton[ height ][ width ];
+
+                for( int i = 0; i < buttons.length; i++ ){
+                    for( int j = 0; j < buttons[i].length; j++ ){
+                        //Initialize every button
+                        buttons[i][j] = new JButton();
+                        buttons[i][j].setBackground( Color.WHITE );
+                        buttons[i][j].setFont( gameButtonFont );
+                        buttons[i][j].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
+                        game.add( buttons[i][j] );
+                    }
+                }
+                gameView.add( game, BorderLayout.CENTER );
+                frame.setTitle( height + "x" + width );
+                frame.remove( mainMenu );
+                frame.remove( highScorePanel );
+                frame.add( gameView );
+                break;
+            }
+            case HIGH_SCORES:{
+                current = new Dimension( startWidth, startHeight );
+                frame.setTitle( highScoreTitle );
+                frame.remove( gameView );
+                frame.remove( mainMenu );
+                frame.add( highScorePanel );
+                break;
+                
+            }
         }
         //Reshape and relocate
         frame.setPreferredSize( current );
@@ -266,14 +311,10 @@ public class MinesweeperView{
             //Show the value
             button.setText( Integer.toString( value ) );
         }
-        // buttons[ height ][ width ].setEnabled(false);    //maybe do this TODO
         
         return retValue;
     }
 
-    // public void setFieldArea( int value, int width, int height ){
-    //     buttons[ height ][ width ].setText( Integer.toString( value ) );
-    // }
 
     public int setFlag( int width, int height ){
         //Set a flag by right clicking
@@ -357,5 +398,13 @@ public class MinesweeperView{
 
     public void setTimeText( String text ){
         timeLabel.setText( " " + text );
+    }
+
+    public JButton getHighScoreButton(){
+        return highScoreButton;
+    }
+
+    public JButton getCloseButton(){
+        return closeHighScores;
     }
 }

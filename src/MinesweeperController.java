@@ -123,13 +123,29 @@ public class MinesweeperController{
             }
         } );
 
+        view.getHighScoreButton().addActionListener( new ActionListener(){
+            @Override
+            public void actionPerformed( ActionEvent ae ){
+                int []widthHeight = view.getStartWidthHeight();
+                view.repaintFrame( view.HIGH_SCORES, widthHeight[0], widthHeight[1] );
+            }
+        } );
+
+        view.getCloseButton().addActionListener( new ActionListener(){
+            @Override
+            public void actionPerformed( ActionEvent ae ){
+                int []widthHeight = view.getStartWidthHeight();
+                //Change to the menuPanel with start width and height
+                view.repaintFrame( view.MAIN_MENU, widthHeight[0], widthHeight[1] );
+            }
+        } );
 
         view.getAbortButton().addActionListener( new ActionListener(){
             @Override
             public void actionPerformed( ActionEvent ae ){
                 int []widthHeight = view.getStartWidthHeight();
                 //Change to the menuPanel with start width and height
-                view.repaintFrame( true, widthHeight[0], widthHeight[1] );
+                view.repaintFrame( view.MAIN_MENU, widthHeight[0], widthHeight[1] );
             }
         } );
 
@@ -152,7 +168,7 @@ public class MinesweeperController{
         firstClick = true;
         thread = new Thread( new TimeControl() );
         //init a new game and change to the gamePanel
-        view.repaintFrame( false, model.getWidth(), model.getHeight() );
+        view.repaintFrame( view.GAME, model.getWidth(), model.getHeight() );
         JButton [][]buttons = view.getGameButtons();
         for( int i = 0; i < buttons.length; i++ ){
             for( int j = 0; j < buttons[i].length; j++ ){
