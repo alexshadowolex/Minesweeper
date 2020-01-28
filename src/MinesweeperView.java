@@ -30,7 +30,7 @@ public class MinesweeperView{
     private final String highScoreTitle = "High Scores";
     private JPanel highScorePanel;
     private JLabel highScoreHeadline;
-    private final String highScoreHeadlineText = "High Scores";
+    private final String highScoreHeadlineText = "High Scores (local)";
     private JLabel []highScores = new JLabel[ 10 ];
     private String []highScoreToolTips = new String[ highScores.length ];
     private JButton closeHighScores;

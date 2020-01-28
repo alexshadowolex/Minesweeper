@@ -1,5 +1,13 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class MinesweeperModel{
 
@@ -8,15 +16,48 @@ public class MinesweeperModel{
     private int width;
     private int height;
     private int [][]fields;
+    public final String seperator = ";$;";
     private final int MAX_MINES = 668;
     private final int MAX_WIDTH = 30;
     private final int MAX_HEIGHT = 24;
     private final int MIN_MINES = 1;
     private final int MIN_WIDTH = 6;
     private final int MIN_HEIGHT = 6;
+    private final String pathToFile = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/data/highscores.txt";
+    private ArrayList<ArrayList<HighScoreHolder>> highScoresBasicGames = new ArrayList<ArrayList<HighScoreHolder>>();
+
+    public class HighScoreHolder{
+        private String userName;
+        private int neededTime;
+        private String whichGame;
+        
+        public HighScoreHolder( String userName, int neededTime, String whichGame ){
+            this.userName = userName;
+            this.neededTime = neededTime;
+            this.whichGame = whichGame;
+        }
+
+        public String getUserName(){
+            return userName;
+        }
+
+        public int getNeededTime(){
+            return neededTime;
+        }
+
+        public String getWhichGame(){
+            return whichGame;
+        }
+
+        @Override
+        public String toString(){
+            return neededTime + "s - " + userName;
+        }
+    }
     
     public MinesweeperModel(){
-        width = height = mines = currentFlags = 0;   
+        width = height = mines = currentFlags = 0;  
+        ReadHighScores(); 
     }
 
     public void initGame( int width, int height, int mines ){
@@ -75,6 +116,40 @@ public class MinesweeperModel{
         
     }
 
+    public void ReadHighScores(){
+        try{
+            File file = new File( pathToFile );
+            FileReader fr = new FileReader( file );
+            BufferedReader br = new BufferedReader( fr );
+            String tmpLine;
+            String currentWhich = "";
+            ArrayList<HighScoreHolder> currentList = new ArrayList<HighScoreHolder>();
+            do{
+                tmpLine = br.readLine();
+                if( tmpLine != null ){
+                    int index = tmpLine.indexOf( seperator );
+                    String tmpName = tmpLine.substring( 0, index );
+                    tmpLine = tmpLine.substring( index + seperator.length() );
+                    index = tmpLine.indexOf( seperator );
+                    int tmpTime = Integer.parseInt( tmpLine.substring( 0, tmpLine.indexOf( seperator ) ) );
+                    String tmpWhich = tmpLine.substring( index + seperator.length() );
+
+                    if( currentWhich.equals("") )
+                        currentWhich = tmpWhich;
+                    if( !currentWhich.equals( tmpWhich ) ){
+                        highScoresBasicGames.add( currentList );
+                        currentList.clear();
+                    }
+
+                    currentList.add( new HighScoreHolder( tmpName, tmpTime, tmpWhich ) );
+                } 
+
+            }while( tmpLine != null );
+
+        } catch ( FileNotFoundException e ){}
+          catch ( IOException e ){}
+    }
+
     public int getWidth(){
         return width;
     }
@@ -125,5 +200,12 @@ public class MinesweeperModel{
 
     public int getMinHeight(){
         return MIN_HEIGHT;
+    }
+
+    public List<HighScoreHolder> getHighScores( int which ){
+        if( which > highScoresBasicGames.size() - 1 || which < 0 )
+            return null;
+
+        return highScoresBasicGames.get( which );
     }
 }
