@@ -2,10 +2,12 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -57,7 +59,8 @@ public class MinesweeperModel{
     
     public MinesweeperModel(){
         width = height = mines = currentFlags = 0;  
-        ReadHighScores(); 
+        readHighScores(); 
+        // writeHighScores();
     }
 
     public void initGame( int width, int height, int mines ){
@@ -116,7 +119,7 @@ public class MinesweeperModel{
         
     }
 
-    public void ReadHighScores(){
+    public void readHighScores(){
         try{
             File file = new File( pathToFile );
             FileReader fr = new FileReader( file );
@@ -138,16 +141,41 @@ public class MinesweeperModel{
                         currentWhich = tmpWhich;
                     if( !currentWhich.equals( tmpWhich ) ){
                         highScoresBasicGames.add( currentList );
-                        currentList.clear();
+                        currentList = new ArrayList<HighScoreHolder>();
                     }
 
                     currentList.add( new HighScoreHolder( tmpName, tmpTime, tmpWhich ) );
+                } else {
+                    highScoresBasicGames.add( currentList );
                 } 
 
             }while( tmpLine != null );
 
+            br.close();
+
         } catch ( FileNotFoundException e ){}
           catch ( IOException e ){}
+    }
+
+    public void writeHighScores(){
+        try{
+            File file = new File( pathToFile );
+            FileWriter fw = new FileWriter( file );
+            BufferedWriter bw = new BufferedWriter( fw );
+
+            for( int i = 0; i < highScoresBasicGames.size(); i++ ){
+                ArrayList<HighScoreHolder> tmpList = highScoresBasicGames.get(i);
+                for( int j = 0; j < tmpList.size(); j++ ){
+                    HighScoreHolder tmp = tmpList.get(j);
+                    bw.write( tmp.getUserName() + seperator + tmp.neededTime + seperator + tmp.whichGame );
+                    if( i != highScoresBasicGames.size() - 1 || j != tmpList.size() - 1 )
+                        bw.write( "\n" );
+                }
+            }
+            bw.flush();
+
+            bw.close();
+        } catch ( IOException e ){}
     }
 
     public int getWidth(){
