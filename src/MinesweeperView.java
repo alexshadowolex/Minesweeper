@@ -63,6 +63,8 @@ public class MinesweeperView{
     private final String pathToXIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji_x.png";
     private final String pathToResetIcon = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/emoji1.jpg";
     private ImageIcon flagIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/flag.png");
+    private ImageIcon celebrateIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/party.png");
+    private final int SIZE_CELEBRATE_ICON = 50;
     private final int SIZE_GAME_ICONS = 30;
     private final int SIZE_MENU_ICONS = 15;
     private ImageIcon bombIcon = new ImageIcon("D:/Dateien/Wichtiges/Programme/java/Minesweeper/icon/bomb.png");
@@ -112,6 +114,7 @@ public class MinesweeperView{
         frame.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
         //Close gets set in Controller
         frame.setResizable(false);
+        frame.setIconImage( bombIcon.getImage() );
         //Build the main menu
         mainMenu = new JPanel( new GridLayout( 8, 1 ) );
         headline = new JLabel( headlineText , SwingConstants.CENTER );
@@ -192,6 +195,7 @@ public class MinesweeperView{
         bombIcon.setImage( bombIcon.getImage().getScaledInstance( SIZE_GAME_ICONS, SIZE_GAME_ICONS, Image.SCALE_DEFAULT ) );
         iconAbort.setImage( iconAbort.getImage().getScaledInstance( SIZE_MENU_ICONS, SIZE_MENU_ICONS, Image.SCALE_DEFAULT ) );
         iconReset.setImage( iconReset.getImage().getScaledInstance( SIZE_MENU_ICONS, SIZE_MENU_ICONS, Image.SCALE_DEFAULT ) );
+        celebrateIcon.setImage( celebrateIcon.getImage().getScaledInstance( SIZE_CELEBRATE_ICON, SIZE_CELEBRATE_ICON, Image.SCALE_DEFAULT ) );
 
         Font font = null;
         try{
@@ -459,7 +463,7 @@ public class MinesweeperView{
                 newHighScoreTitle, 
                 JOptionPane.NO_OPTION, 
                 JOptionPane.QUESTION_MESSAGE, 
-                null, 
+                celebrateIcon, 
                 options , options[0] );
             
         }
