@@ -1,6 +1,9 @@
 // import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
+
 public class MinesweeperController{
     private MinesweeperView view;
     private MinesweeperModel model;
@@ -8,6 +11,7 @@ public class MinesweeperController{
     private boolean firstClick = true;
     private boolean goTime = false;
     private Thread thread;
+    private int atWhichHighscores = 0;
 
     private class TimeControl implements Runnable{
         
@@ -23,6 +27,13 @@ public class MinesweeperController{
     public MinesweeperController(){
         view = new MinesweeperView();   //initialize GUI
         model = new MinesweeperModel(); //initialize data
+        view.getFrame().addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing( java.awt.event.WindowEvent windowEvent ){
+                model.writeHighScores();
+                System.exit(0);
+            }
+        });
 
         JRadioButton []radioButtons = view.getRadioButtons();
         JTextField   []textFields   = view.getCustomTextFields();
@@ -128,6 +139,8 @@ public class MinesweeperController{
             public void actionPerformed( ActionEvent ae ){
                 int []widthHeight = view.getStartWidthHeight();
                 view.repaintFrame( view.HIGH_SCORES, widthHeight[0], widthHeight[1] );
+                ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay = model.getHighScores( atWhichHighscores );
+                fillHighScoreLables( currentDisplay );
             }
         } );
 
@@ -137,6 +150,19 @@ public class MinesweeperController{
                 int []widthHeight = view.getStartWidthHeight();
                 //Change to the menuPanel with start width and height
                 view.repaintFrame( view.MAIN_MENU, widthHeight[0], widthHeight[1] );
+                atWhichHighscores = 0;
+            }
+        } );
+
+        view.getNextButton().addActionListener( new ActionListener(){
+            @Override
+            public void actionPerformed( ActionEvent ae ){
+                atWhichHighscores++;
+                ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay = model.getHighScores( atWhichHighscores );
+                if( currentDisplay == null )
+                    atWhichHighscores = 0;
+                currentDisplay = model.getHighScores( atWhichHighscores );
+                fillHighScoreLables( currentDisplay );
             }
         } );
 
@@ -257,6 +283,13 @@ public class MinesweeperController{
                                         finishedGame = true;
                                         goTime = false;
                                         view.setCounterText("WIN");
+                                        if( (width == 9 && height == 9) || (width == 16 && height == 16) || (width == 32 && height == 16) ){
+                                        
+                                            if( model.isTopTen( Integer.parseInt( view.getTimeText().replace(" ", "") ), width + "x" + height ) ){
+                                                model.addToHighScores( model.new HighScoreHolder( view.showOptionPane( model.seperator ), Integer.parseInt( view.getTimeText().replace(" ", "") ) , width + "x" + height ) );
+                                            }
+                                        
+                                        }
                                     }
                                 }
                             } 
@@ -289,6 +322,16 @@ public class MinesweeperController{
                 if( value != 0 && value != -1 )
                     view.setNumberColors( value, j, i );
             }
+        }
+    }
+
+    private void fillHighScoreLables( ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay ){
+        view.setHighScoreTitle( "for " + currentDisplay.get(0).getWhichGame() );
+        for( int i = 0; i < currentDisplay.size(); i++ ){
+            view.setHighScoreLabels( i, currentDisplay.get(i).toString() );
+        }
+        for( int i = currentDisplay.size(); i < 10; i++ ){
+            view.setHighScoreLabels( i, "T.B.D." );
         }
     }
 

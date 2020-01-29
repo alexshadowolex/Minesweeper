@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.List;
 import java.io.BufferedReader;
@@ -28,7 +30,7 @@ public class MinesweeperModel{
     private final String pathToFile = "D:/Dateien/Wichtiges/Programme/java/Minesweeper/data/highscores.txt";
     private ArrayList<ArrayList<HighScoreHolder>> highScoresBasicGames = new ArrayList<ArrayList<HighScoreHolder>>();
 
-    public class HighScoreHolder{
+    public class HighScoreHolder implements Comparable<HighScoreHolder>{
         private String userName;
         private int neededTime;
         private String whichGame;
@@ -53,7 +55,11 @@ public class MinesweeperModel{
 
         @Override
         public String toString(){
-            return neededTime + "s - " + userName;
+            return "    " + userName + " - " + neededTime + "s";
+        }
+        @Override
+        public int compareTo( HighScoreHolder o ) {
+            return Integer.compare( this.neededTime, ((HighScoreHolder) o).neededTime );
         }
     }
     
@@ -230,10 +236,43 @@ public class MinesweeperModel{
         return MIN_HEIGHT;
     }
 
-    public List<HighScoreHolder> getHighScores( int which ){
+    public ArrayList<HighScoreHolder> getHighScores( int which ){
         if( which > highScoresBasicGames.size() - 1 || which < 0 )
             return null;
 
         return highScoresBasicGames.get( which );
+    }
+
+    public boolean isTopTen( int time, String which ){
+        ArrayList<HighScoreHolder> current = new ArrayList<HighScoreHolder>();
+        for( int i = 0; i < highScoresBasicGames.size(); i++ ){
+            if( highScoresBasicGames.get(i).get(0).whichGame.equals( which ) ){
+                current = highScoresBasicGames.get(i);
+                break;
+            }
+        }
+
+        if( current.size() < 10 )
+            return true;
+        for( int i = 0; i < current.size(); i++ ){
+            if( time < current.get(i).neededTime )
+                return true;
+        }
+
+        return false;
+    }
+
+    public void addToHighScores( HighScoreHolder newEntry ){
+        int index = -1;
+        for( int i = 0; i < highScoresBasicGames.size(); i++ ){
+            if( highScoresBasicGames.get(i).get(0).whichGame.equals( newEntry.whichGame ) ){
+                index = i;
+                break;
+            }
+        }
+        highScoresBasicGames.get( index ).add( newEntry );
+        Collections.sort( highScoresBasicGames.get( index ) );
+        if( highScoresBasicGames.get( index ).size() > 10 )
+            highScoresBasicGames.get( index ).remove( highScoresBasicGames.get( index ).size() - 1 );
     }
 }

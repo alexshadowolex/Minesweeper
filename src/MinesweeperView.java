@@ -33,7 +33,12 @@ public class MinesweeperView{
     private final String highScoreHeadlineText = "High Scores (local)";
     private JLabel []highScores = new JLabel[ 10 ];
     private String []highScoreToolTips = new String[ highScores.length ];
+    private JPanel highScoreControl;
+    private JButton nextHighScores;
     private JButton closeHighScores;
+
+    private final String newHighScoreMessage = "New Highscore! Name :";
+    private final String newHighScoreTitle = "New Highscore";
 
     private final int FACTOR_WINDOW_SIZE = 40;
     private final Font generalFont = new Font("Arial", Font.BOLD, 14 );
@@ -105,7 +110,8 @@ public class MinesweeperView{
         frame = new JFrame( menuTitle );
         frame.setFont( generalFont );
         frame.setVisible(true);
-        frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        frame.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
+        //Close gets set in Controller
         frame.setResizable(false);
         //Build the main menu
         mainMenu = new JPanel( new GridLayout( 8, 1 ) );
@@ -126,9 +132,16 @@ public class MinesweeperView{
             highScores[i].setFont( generalFont );
             highScorePanel.add( highScores[i] );
         }
+        highScoreControl = new JPanel( new GridLayout( 1, 2 ) );
         closeHighScores = new JButton("Close");
         closeHighScores.setFont( generalFont );
-        highScorePanel.add( closeHighScores );
+        highScoreControl.add( closeHighScores );
+        nextHighScores = new JButton("Next");
+        nextHighScores.setFont( generalFont );
+        highScoreControl.add( nextHighScores );
+
+
+        highScorePanel.add( highScoreControl );
 
         bg = new ButtonGroup();
 
@@ -406,5 +419,42 @@ public class MinesweeperView{
 
     public JButton getCloseButton(){
         return closeHighScores;
+    }
+
+    public void setHighScoreLabels( int which, String text ){
+        highScores[ which ].setText( ( which + 1 ) + "." + text );
+    }
+
+    public JButton getNextButton(){
+        return nextHighScores;
+    }
+
+    public JFrame getFrame(){
+        return frame;
+    }
+
+    public void setHighScoreTitle( String text ){
+        highScoreHeadline.setText( highScoreHeadlineText + " " + text );
+    }
+
+    public String showOptionPane( String forbidden ){
+        String[] options = {"OK"};
+        JPanel panel = new JPanel();
+        JLabel lbl = new JLabel( newHighScoreMessage );
+        JTextField txt = new JTextField( 15 );
+        panel.add( lbl );
+        panel.add( txt );
+        while(  txt.getText().equals("") || txt.getText().equals(" ") || txt.getText().indexOf( forbidden ) != -1 ){
+            txt.setText("No \";$;\", \"\" or \" \"");
+            JOptionPane.showOptionDialog( 
+                frame, panel, 
+                newHighScoreTitle, 
+                JOptionPane.NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, 
+                null, 
+                options , options[0] );
+            
+        }
+        return txt.getText();
     }
 }
