@@ -15,7 +15,7 @@ public class MinesweeperView{
     private JPanel gameMenuLower;
     private JPanel mainMenu;
     private JButton abortButton;
-    private final String abortButtonToolTip = "Abort Game";
+    private final String abortButtonToolTip = "End Game";
     private JButton resetButton;
     private final String resetButtonToolTip = "Reset Game";
     private JLabel countLabel;
@@ -32,7 +32,6 @@ public class MinesweeperView{
     private JLabel highScoreHeadline;
     private final String highScoreHeadlineText = "High Scores (local)";
     private JLabel []highScores = new JLabel[ 10 ];
-    private String []highScoreToolTips = new String[ highScores.length ];
     private JPanel highScoreControl;
     private JButton nextHighScores;
     private JButton closeHighScores;
@@ -130,6 +129,7 @@ public class MinesweeperView{
         for( int i = 0; i < highScores.length; i++ ){
             highScores[i] = new JLabel( String.valueOf( i ) );
             highScores[i].setFont( generalFont );
+            highScores[i].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
             highScorePanel.add( highScores[i] );
         }
         highScoreControl = new JPanel( new GridLayout( 1, 2 ) );
@@ -421,8 +421,9 @@ public class MinesweeperView{
         return closeHighScores;
     }
 
-    public void setHighScoreLabels( int which, String text ){
+    public void setHighScoreLabels( int which, String text, String toolTip ){
         highScores[ which ].setText( ( which + 1 ) + "." + text );
+        highScores[ which ].setToolTipText( toolTip );
     }
 
     public JButton getNextButton(){
@@ -433,8 +434,15 @@ public class MinesweeperView{
         return frame;
     }
 
+    public JLabel[] getHighScoreLabels(){
+        return highScores;
+    }
+
     public void setHighScoreTitle( String text ){
-        highScoreHeadline.setText( highScoreHeadlineText + " " + text );
+        String headline = text;
+        if( text.indexOf("x") != -1 )
+            headline = highScoreHeadlineText + " " + headline;
+        highScoreHeadline.setText( headline );
     }
 
     public String showOptionPane( String forbidden ){

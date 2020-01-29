@@ -1,12 +1,9 @@
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Random;
-import java.util.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -55,7 +52,7 @@ public class MinesweeperModel{
 
         @Override
         public String toString(){
-            return "    " + userName + " - " + neededTime + "s";
+            return "  " + userName + " - " + neededTime + "s";
         }
         @Override
         public int compareTo( HighScoreHolder o ) {
@@ -66,7 +63,6 @@ public class MinesweeperModel{
     public MinesweeperModel(){
         width = height = mines = currentFlags = 0;  
         readHighScores(); 
-        // writeHighScores();
     }
 
     public void initGame( int width, int height, int mines ){
@@ -128,6 +124,7 @@ public class MinesweeperModel{
     public void readHighScores(){
         try{
             File file = new File( pathToFile );
+            file.createNewFile();
             FileReader fr = new FileReader( file );
             BufferedReader br = new BufferedReader( fr );
             String tmpLine;
@@ -152,7 +149,8 @@ public class MinesweeperModel{
 
                     currentList.add( new HighScoreHolder( tmpName, tmpTime, tmpWhich ) );
                 } else {
-                    highScoresBasicGames.add( currentList );
+                    if( currentList.size() != 0  )
+                        highScoresBasicGames.add( currentList );
                 } 
 
             }while( tmpLine != null );
@@ -245,6 +243,8 @@ public class MinesweeperModel{
 
     public boolean isTopTen( int time, String which ){
         ArrayList<HighScoreHolder> current = new ArrayList<HighScoreHolder>();
+        if( current.size() < 10 )
+            return true;
         for( int i = 0; i < highScoresBasicGames.size(); i++ ){
             if( highScoresBasicGames.get(i).get(0).whichGame.equals( which ) ){
                 current = highScoresBasicGames.get(i);
@@ -252,8 +252,6 @@ public class MinesweeperModel{
             }
         }
 
-        if( current.size() < 10 )
-            return true;
         for( int i = 0; i < current.size(); i++ ){
             if( time < current.get(i).neededTime )
                 return true;
@@ -264,13 +262,23 @@ public class MinesweeperModel{
 
     public void addToHighScores( HighScoreHolder newEntry ){
         int index = -1;
-        for( int i = 0; i < highScoresBasicGames.size(); i++ ){
-            if( highScoresBasicGames.get(i).get(0).whichGame.equals( newEntry.whichGame ) ){
-                index = i;
-                break;
+        if( highScoresBasicGames.size() != 0 ){
+            for( int i = 0; i < highScoresBasicGames.size(); i++ ){
+                if( highScoresBasicGames.get(i).get(0).whichGame.equals( newEntry.whichGame ) ){
+                    index = i;
+                    break;
+                }
             }
         }
-        highScoresBasicGames.get( index ).add( newEntry );
+        if( index == -1 ){
+            if( highScoresBasicGames.size() == 0 )
+                index = 0;
+            else
+                index = highScoresBasicGames.size();
+            highScoresBasicGames.add( new ArrayList<HighScoreHolder>() );
+            highScoresBasicGames.get( index ).add( newEntry );
+        }
+
         Collections.sort( highScoresBasicGames.get( index ) );
         if( highScoresBasicGames.get( index ).size() > 10 )
             highScoresBasicGames.get( index ).remove( highScoresBasicGames.get( index ).size() - 1 );

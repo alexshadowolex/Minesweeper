@@ -12,6 +12,8 @@ public class MinesweeperController{
     private boolean goTime = false;
     private Thread thread;
     private int atWhichHighscores = 0;
+    private final String []ordinals = new String[]{"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eigth", "Nineth", "Tenth"};
+    private boolean isCustom = false;
 
     private class TimeControl implements Runnable{
         
@@ -68,12 +70,14 @@ public class MinesweeperController{
                                 //First radioButton selected
                                 width = height = 9;
                                 mines = 10;
+                                isCustom = false;
                                 break;
                             }
                             case 1:{
                                 //Second radioButton selected
                                 width = height = 16;
                                 mines = 40;
+                                isCustom = false;
                                 break;
                             }
                             case 2:{
@@ -81,6 +85,7 @@ public class MinesweeperController{
                                 width = 32;
                                 height = 16;
                                 mines = 99;
+                                isCustom = false;
                                 break;
                             }
                             case 3:{
@@ -119,6 +124,7 @@ public class MinesweeperController{
                                         textFields[2].setText("min " + model.getMinMines() );
                                         worked = false;
                                     }
+                                    isCustom = true;
                                 }
                                 break;
                             }
@@ -283,7 +289,7 @@ public class MinesweeperController{
                                         finishedGame = true;
                                         goTime = false;
                                         view.setCounterText("WIN");
-                                        if( (width == 9 && height == 9) || (width == 16 && height == 16) || (width == 32 && height == 16) ){
+                                        if( !isCustom ){
                                         
                                             if( model.isTopTen( Integer.parseInt( view.getTimeText().replace(" ", "") ), width + "x" + height ) ){
                                                 model.addToHighScores( model.new HighScoreHolder( view.showOptionPane( model.seperator ), Integer.parseInt( view.getTimeText().replace(" ", "") ) , width + "x" + height ) );
@@ -326,12 +332,27 @@ public class MinesweeperController{
     }
 
     private void fillHighScoreLables( ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay ){
-        view.setHighScoreTitle( "for " + currentDisplay.get(0).getWhichGame() );
-        for( int i = 0; i < currentDisplay.size(); i++ ){
-            view.setHighScoreLabels( i, currentDisplay.get(i).toString() );
+        JLabel []highScores = view.getHighScoreLabels();
+        for( JLabel jl: highScores )
+            jl.setVisible(true);
+
+        try{
+            view.setHighScoreTitle( "for " + currentDisplay.get(0).getWhichGame() );
+            for( int i = 0; i < currentDisplay.size(); i++ ){
+                view.setHighScoreLabels( i, currentDisplay.get(i).toString(), ordinals[i] + " Place: " + currentDisplay.get(i).getUserName() );
+            }
+        } catch ( IndexOutOfBoundsException e ){}
+          catch ( NullPointerException e ){
+            view.setHighScoreTitle( "No Highscores found!" );
         }
-        for( int i = currentDisplay.size(); i < 10; i++ ){
-            view.setHighScoreLabels( i, "T.B.D." );
+
+        if( currentDisplay != null ){
+            for( int i = currentDisplay.size(); i < 10; i++ ){
+                view.setHighScoreLabels( i, "  T.B.D.", "To Be Done" );
+            }
+        } else {
+            for( JLabel jl: highScores )
+                jl.setVisible(false);
         }
     }
 
