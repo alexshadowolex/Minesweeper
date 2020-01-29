@@ -1,7 +1,5 @@
 import java.awt.*;
-// import java.awt.event.*;
 import javax.swing.*;
-// import java.util.*;
 import java.io.*;
 
 public class MinesweeperView{
@@ -38,6 +36,7 @@ public class MinesweeperView{
 
     private final String newHighScoreMessage = "New Highscore! Name :";
     private final String newHighScoreTitle = "New Highscore";
+    private final String []ordinals = new String[]{"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eigth", "Nineth", "Tenth"};
 
     private final int FACTOR_WINDOW_SIZE = 40;
     private final Font generalFont = new Font("Arial", Font.BOLD, 14 );
@@ -125,6 +124,7 @@ public class MinesweeperView{
         highScoreButton.setFont( generalFont );
         mainMenu.add( highScoreButton );
 
+        //Build the highscore side
         highScorePanel = new JPanel( new GridLayout( highScores.length + 2, 1 ) );
         highScoreHeadline = new JLabel( highScoreHeadlineText, SwingConstants.CENTER );
         highScoreHeadline.setFont( generalFont );
@@ -135,6 +135,7 @@ public class MinesweeperView{
             highScores[i].setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
             highScorePanel.add( highScores[i] );
         }
+        //Build the highscore menu
         highScoreControl = new JPanel( new GridLayout( 1, 2 ) );
         closeHighScores = new JButton("Close");
         closeHighScores.setFont( generalFont );
@@ -191,6 +192,7 @@ public class MinesweeperView{
         //Reshape some icons
         ImageIcon iconAbort = new ImageIcon( pathToXIcon );
         ImageIcon iconReset = new ImageIcon( pathToResetIcon );
+        //Resize all icons
         flagIcon.setImage( flagIcon.getImage().getScaledInstance( SIZE_GAME_ICONS, SIZE_GAME_ICONS, Image.SCALE_DEFAULT ) );
         bombIcon.setImage( bombIcon.getImage().getScaledInstance( SIZE_GAME_ICONS, SIZE_GAME_ICONS, Image.SCALE_DEFAULT ) );
         iconAbort.setImage( iconAbort.getImage().getScaledInstance( SIZE_MENU_ICONS, SIZE_MENU_ICONS, Image.SCALE_DEFAULT ) );
@@ -222,6 +224,7 @@ public class MinesweeperView{
         gameMenuHigher.add( abortButton );
         gameMenuHigher.add( resetButton );
 
+        //Build the Timer
         gameMenuLower = new JPanel( new GridLayout( 1, 2 ) );
         timeLabel = new JLabel(" TimeLabel", SwingConstants.LEFT );
         timeLabel.setToolTipText( timeLabelToolTip );
@@ -229,6 +232,7 @@ public class MinesweeperView{
         timeLabel.setForeground( Color.RED );
         gameMenuLower.add( timeLabel );
 
+        //Build the counter
         countLabel = new JLabel("CountLabel ", SwingConstants.RIGHT );
         countLabel.setToolTipText( countLabelToolTip );
         countLabel.setFont( font );
@@ -357,6 +361,46 @@ public class MinesweeperView{
         return 0;
     }
 
+    public void setHighScoreLabels( int which, String text, String toolTip ){
+        highScores[ which ].setText( ( which + 1 ) + "." + text );
+        String tT = toolTip;
+        //Ordinals only, if an entry exists
+        if( !toolTip.equals("To Be Done") )
+            tT = ordinals[ which ] + " " + tT;
+        highScores[ which ].setToolTipText( tT );
+    }
+
+    public void setHighScoreTitle( String text ){
+        String headline = text;
+        //If x exists (e.g. 9x9), add the general text
+        if( text.indexOf("x") != -1 )
+            headline = highScoreHeadlineText + " " + headline;
+        highScoreHeadline.setText( headline );
+    }
+
+    public String showOptionPane( String forbidden ){
+        //Build an option pane to get the name for a highscore entry
+        String[] options = {"OK"};
+        JPanel panel = new JPanel();
+        JLabel lbl = new JLabel( newHighScoreMessage );
+        JTextField txt = new JTextField( 15 );
+        panel.add( lbl );
+        panel.add( txt );
+        while(  txt.getText().equals("") || txt.getText().equals(" ") || txt.getText().indexOf( forbidden ) != -1 ){
+            //Avoid read-failures
+            txt.setText("No \";$;\", \"\" or \" \"");
+            JOptionPane.showOptionDialog( 
+                frame, panel, 
+                newHighScoreTitle, 
+                JOptionPane.NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, 
+                celebrateIcon, 
+                options , options[0] );
+            
+        }
+        return txt.getText();
+    }
+
     public void setNumberColors( int value, int width, int height ){
         buttons[ height ][ width ].setForeground( numberColors[ value - 1 ] );
     }
@@ -425,10 +469,6 @@ public class MinesweeperView{
         return closeHighScores;
     }
 
-    public void setHighScoreLabels( int which, String text, String toolTip ){
-        highScores[ which ].setText( ( which + 1 ) + "." + text );
-        highScores[ which ].setToolTipText( toolTip );
-    }
 
     public JButton getNextButton(){
         return nextHighScores;
@@ -440,33 +480,5 @@ public class MinesweeperView{
 
     public JLabel[] getHighScoreLabels(){
         return highScores;
-    }
-
-    public void setHighScoreTitle( String text ){
-        String headline = text;
-        if( text.indexOf("x") != -1 )
-            headline = highScoreHeadlineText + " " + headline;
-        highScoreHeadline.setText( headline );
-    }
-
-    public String showOptionPane( String forbidden ){
-        String[] options = {"OK"};
-        JPanel panel = new JPanel();
-        JLabel lbl = new JLabel( newHighScoreMessage );
-        JTextField txt = new JTextField( 15 );
-        panel.add( lbl );
-        panel.add( txt );
-        while(  txt.getText().equals("") || txt.getText().equals(" ") || txt.getText().indexOf( forbidden ) != -1 ){
-            txt.setText("No \";$;\", \"\" or \" \"");
-            JOptionPane.showOptionDialog( 
-                frame, panel, 
-                newHighScoreTitle, 
-                JOptionPane.NO_OPTION, 
-                JOptionPane.QUESTION_MESSAGE, 
-                celebrateIcon, 
-                options , options[0] );
-            
-        }
-        return txt.getText();
     }
 }

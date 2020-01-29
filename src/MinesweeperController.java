@@ -3,22 +3,23 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class MinesweeperController{
-    private MinesweeperView view;
-    private MinesweeperModel model;
-    private boolean finishedGame = false;
-    private boolean firstClick = true;
-    private boolean goTime = false;
+    private MinesweeperView view;   //GUI
+    private MinesweeperModel model; //Data
+    private boolean finishedGame = false;   //Game Done
+    private boolean firstClick = true;      //To know when to start the timer
+    private boolean goTime = false;         //Time control
     private Thread thread;
-    private int atWhichHighscores = 0;
-    private final String []ordinals = new String[]{"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eigth", "Nineth", "Tenth"};
-    private boolean isCustom = false;
+    private int atWhichHighscores = 0;      //which highscore side
+    private boolean isCustom = false;       //So it won't get saved
 
+    //Thread-class for the timer
     private class TimeControl implements Runnable{
         
         public TimeControl(){}
         public void run(){
             long startTime = System.currentTimeMillis();
             while( goTime ){
+                //Set the timer's text every second
                 view.setTimeText( String.valueOf( ( System.currentTimeMillis() - startTime ) / 1000 ) );
             }
         }
@@ -27,9 +28,10 @@ public class MinesweeperController{
     public MinesweeperController(){
         view = new MinesweeperView();   //initialize GUI
         model = new MinesweeperModel(); //initialize data
-        view.getFrame().addWindowListener(new java.awt.event.WindowAdapter() {
+        view.getFrame().addWindowListener( new java.awt.event.WindowAdapter(){
             @Override
             public void windowClosing( java.awt.event.WindowEvent windowEvent ){
+                //Save highscores before closing
                 model.writeHighScores();
                 System.exit(0);
             }
@@ -143,7 +145,9 @@ public class MinesweeperController{
             public void actionPerformed( ActionEvent ae ){
                 int []widthHeight = view.getStartWidthHeight();
                 view.repaintFrame( view.HIGH_SCORES, widthHeight[0], widthHeight[1] );
+                //Change to highscores on click
                 ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay = model.getHighScores( atWhichHighscores );
+                //get the highscore list and fill the labels
                 fillHighScoreLables( currentDisplay );
             }
         } );
@@ -162,9 +166,11 @@ public class MinesweeperController{
             @Override
             public void actionPerformed( ActionEvent ae ){
                 atWhichHighscores++;
+                //Next side of highscores (max 3)
                 ArrayList<MinesweeperModel.HighScoreHolder> currentDisplay = model.getHighScores( atWhichHighscores );
                 if( currentDisplay == null )
                     atWhichHighscores = 0;
+                //restart and zero and make sure, no null will be given to the function
                 currentDisplay = model.getHighScores( atWhichHighscores );
                 fillHighScoreLables( currentDisplay );
             }
@@ -288,8 +294,9 @@ public class MinesweeperController{
                                         goTime = false;
                                         view.setCounterText("WIN");
                                         if( !isCustom ){
-                                        
+                                            //If not a custom game, check whether in top ten
                                             if( model.isTopTen( Integer.parseInt( view.getTimeText().replace(" ", "") ), width + "x" + height ) ){
+                                                //Add to highscores
                                                 model.addToHighScores( model.new HighScoreHolder( view.showOptionPane( model.seperator ), Integer.parseInt( view.getTimeText().replace(" ", "") ) , width + "x" + height ) );
                                             }
                                         
@@ -335,9 +342,11 @@ public class MinesweeperController{
             jl.setVisible(true);
 
         try{
+            //Set the specific title, if a highscore list exists
             view.setHighScoreTitle( "for " + currentDisplay.get(0).getWhichGame() );
             for( int i = 0; i < currentDisplay.size(); i++ ){
-                view.setHighScoreLabels( i, currentDisplay.get(i).toString(), ordinals[i] + " Place: " + currentDisplay.get(i).getUserName() );
+                //Set label text and tooltip
+                view.setHighScoreLabels( i, currentDisplay.get(i).toString(), "Place: " + currentDisplay.get(i).getUserName() );
             }
         } catch ( IndexOutOfBoundsException e ){}
           catch ( NullPointerException e ){
@@ -345,10 +354,12 @@ public class MinesweeperController{
         }
 
         if( currentDisplay != null ){
+            //Set all not existing places on "TBD"
             for( int i = currentDisplay.size(); i < 10; i++ ){
                 view.setHighScoreLabels( i, "  T.B.D.", "To Be Done" );
             }
         } else {
+            //Make all labels invisible
             for( JLabel jl: highScores )
                 jl.setVisible(false);
         }
@@ -356,7 +367,7 @@ public class MinesweeperController{
 
     private void buildAndSetCounter(){
         String tmp = Integer.toString( model.getCurrentFlags() );
-        //Build a string for the label
+        //Build a string for the counter label
         if( model.getCurrentFlags() >= 0 )
             while( tmp.length() < Integer.toString( model.getMaxMines() ).length() )
                 tmp = "0" + tmp;
