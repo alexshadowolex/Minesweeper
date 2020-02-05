@@ -17,7 +17,7 @@ public class MinesweeperModel{
     private int width;
     private int height;
     private int [][]fields;
-    public final String seperator = ";$;";
+    public final String seperator = ";\\$;";
     private final int MAX_MINES = 668;
     private final int MAX_WIDTH = 30;
     private final int MAX_HEIGHT = 24;
@@ -137,12 +137,8 @@ public class MinesweeperModel{
             do{
                 tmpLine = br.readLine();
                 if( tmpLine != null ){
-                    int index = tmpLine.indexOf( seperator );
-                    String tmpName = tmpLine.substring( 0, index );
-                    tmpLine = tmpLine.substring( index + seperator.length() );
-                    index = tmpLine.indexOf( seperator );
-                    int tmpTime = Integer.parseInt( tmpLine.substring( 0, tmpLine.indexOf( seperator ) ) );
-                    String tmpWhich = tmpLine.substring( index + seperator.length() );
+                    String []seperated = tmpLine.split( seperator );
+                    String tmpWhich = seperated[ seperated.length - 1 ];
 
                     //Get the lines current list
                     if( currentWhich.equals("") )
@@ -153,7 +149,7 @@ public class MinesweeperModel{
                         currentList = new ArrayList<HighScoreHolder>();
                     }
 
-                    currentList.add( new HighScoreHolder( tmpName, tmpTime, tmpWhich ) );
+                    currentList.add( new HighScoreHolder( seperated[0], Integer.parseInt( seperated[1] ), seperated[2] ) );
                 } else {
                     if( currentList.size() != 0  )
                         highScoresBasicGames.add( currentList );
@@ -241,9 +237,9 @@ public class MinesweeperModel{
             else
                 //some lists exist
                 index = highScoresBasicGames.size();
-            highScoresBasicGames.add( new ArrayList<HighScoreHolder>() );
-            highScoresBasicGames.get( index ).add( newEntry );
         }
+        highScoresBasicGames.add( new ArrayList<HighScoreHolder>() );
+        highScoresBasicGames.get( index ).add( newEntry );
 
         //Sort by time used
         Collections.sort( highScoresBasicGames.get( index ) );
